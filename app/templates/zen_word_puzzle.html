@@ -1,0 +1,134 @@
+{# Partial: zen_word_puzzle.html — rendered by /api/zen/word (HTMX swap) #}
+{% if word %}
+<div id="zen-word-puzzle"
+     style="
+       background: linear-gradient(135deg, rgba(94,231,223,.08), rgba(180,111,255,.06));
+       border: 1px solid rgba(94,231,223,.25);
+       border-radius: 24px;
+       padding: 2rem;
+       text-align: center;
+       animation: fadeSlideIn .35s ease;
+     ">
+
+  <!-- Word in Japanese -->
+  <div style="
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #5ee7df, #b46fff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: .15em;
+    margin-bottom: .8rem;
+    line-height: 1.2;
+  ">{{ word.j }}</div>
+
+  <div style="font-size:.78rem; color:var(--text-dim); margin-bottom:1.5rem; text-transform:uppercase; letter-spacing:.08em;">
+    Decodifica in Romaji
+  </div>
+
+  <!-- Answer form — HTMX POST to check -->
+  <form
+    id="zen-puzzle-form-{{ word.id }}"
+    hx-post="/api/zen/word/check/{{ word.id }}"
+    hx-target="#zen-word-puzzle"
+    hx-swap="outerHTML"
+    hx-include="#zen-puzzle-form-{{ word.id }}"
+    style="display:flex; flex-direction:column; align-items:center; gap:.8rem;">
+
+    <div style="display:flex; gap:.6rem; width:100%; max-width:340px;">
+      <input
+        type="text"
+        name="answer"
+        id="zen-answer-input"
+        placeholder="es. ai, sakana, tsuki…"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        autofocus
+        style="
+          flex: 1;
+          padding: .8rem 1.1rem;
+          border-radius: 12px;
+          background: rgba(255,255,255,.07);
+          border: 2px solid var(--border);
+          color: var(--text-primary);
+          font-size: 1.1rem;
+          text-align: center;
+          font-family: 'Inter', sans-serif;
+          outline: none;
+          transition: border-color .2s, box-shadow .2s;
+        "
+        onfocus="this.style.borderColor='var(--accent-3)'; this.style.boxShadow='0 0 0 3px rgba(94,231,223,.18)'"
+        onblur="this.style.borderColor='var(--border)'; this.style.boxShadow='none'"
+      >
+      <button type="submit" style="
+        padding: .8rem 1.2rem;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--accent-3), var(--accent-1));
+        color: #fff;
+        border: none;
+        font-weight: 700;
+        font-size: .95rem;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: transform .15s, box-shadow .15s;
+      " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+        Verifica →
+      </button>
+    </div>
+  </form>
+
+  <!-- Hint button — HTMX GET to reveal -->
+  <div style="margin-top:1rem;">
+    <button
+      hx-get="/api/zen/word/hint/{{ word.id }}"
+      hx-target="#zen-word-puzzle"
+      hx-swap="outerHTML"
+      style="
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        color: var(--text-muted);
+        padding: .4rem 1rem;
+        font-size: .8rem;
+        cursor: pointer;
+        transition: border-color .2s, color .2s;
+      "
+      onmouseover="this.style.borderColor='var(--accent-warn)'; this.style.color='var(--accent-warn)'"
+      onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--text-muted)'"
+    >
+      💡 Suggerimento / Mostra Soluzione
+    </button>
+  </div>
+
+  <!-- Keyboard hint -->
+  <div style="margin-top:.8rem; font-size:.7rem; color:var(--text-dim);">
+    Premi <kbd style="background:rgba(255,255,255,.1); border:1px solid var(--border); border-radius:3px; padding:.05rem .3rem;">Invio</kbd> per verificare
+  </div>
+
+</div>
+
+<script>
+// Submit on Enter key
+document.getElementById('zen-answer-input') && document.getElementById('zen-answer-input').addEventListener('keydown', function(e){
+  if(e.key === 'Enter'){ e.preventDefault(); document.querySelector('#zen-puzzle-form-{{ word.id }} button[type=submit]').click(); }
+});
+</script>
+
+{% else %}
+<div id="zen-word-puzzle" style="text-align:center; padding:2rem; color:var(--text-muted);">
+  <div style="font-size:2rem; margin-bottom:.8rem;">📚</div>
+  <p>Impara più caratteri per sbloccare le parole!</p>
+  <a href="/learn" class="btn btn-primary" style="margin-top:.8rem;" id="zen-word-goto-learn">🌱 Impara ora</a>
+</div>
+{% endif %}
+
+<style>
+@keyframes fadeSlideIn {
+  from { opacity:0; transform: translateY(10px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+</style>

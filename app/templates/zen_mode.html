@@ -1,24 +1,40 @@
 {% extends "base.html" %}
 
 {% block title %}Zen Mode 🪷 — 日本語{% endblock %}
-{% block description %}Modalità Zen: ripassi leggeri senza pressione{% endblock %}
+{% block description %}Modalità Zen: ripassi leggeri e decodifica parole senza pressione{% endblock %}
+
+{% block head %}
+<!-- HTMX (needed for zen word discovery) -->
+<script src="https://unpkg.com/htmx.org@1.9.10" defer></script>
+<style>
+.zen-bg { background: radial-gradient(ellipse at top, rgba(94,231,223,.04) 0%, transparent 60%); }
+.zen-divider {
+  display: flex; align-items: center; gap: 1rem;
+  margin: 2.5rem 0; color: var(--text-dim); font-size: .75rem;
+  text-transform: uppercase; letter-spacing: .1em;
+}
+.zen-divider::before, .zen-divider::after {
+  content:''; flex:1; height:1px; background: var(--border);
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="page zen-bg">
+<div class="zen-bg">
 <div class="container">
 
-  <!-- ── Zen header ─────────────────────────────────────── -->
+  <!-- ── Zen header ──────────────────────────────────────── -->
   <div style="text-align:center; padding: 2.5rem 0 1.5rem;">
     <div style="font-size:3.5rem; margin-bottom:.8rem;">🪷</div>
-    <h1 class="zen-title">Zen Mode</h1>
-    <p class="zen-subtitle">
-      Riposati e osserva i caratteri che già conosci.<br>
+    <h1 style="font-size:1.8rem; font-weight:700; margin-bottom:.4rem;">Zen Mode</h1>
+    <p style="color:var(--text-muted); font-size:.9rem; max-width:400px; margin:0 auto 1rem;">
+      Riposati, decodifica parole e osserva i caratteri che già conosci.<br>
       Nessuna pressione, nessun punteggio.
     </p>
 
     {% if ts.over_hard %}
     <div class="alert alert-info" style="display:inline-block; margin-bottom:1rem;">
-      🛑 Hai raggiunto il limite di 20 minuti oggi. Ottimo lavoro! Riprendi domani.
+      🛑 Hai raggiunto i 20 minuti oggi. Ottimo lavoro! Riprendi domani.
     </div>
     {% endif %}
 
@@ -27,16 +43,55 @@
                 background:var(--bg-glass); border:1px solid var(--border);
                 border-radius:100px; padding:.5rem 1.2rem; font-size:.85rem; margin-bottom:1rem;">
       <span style="color:var(--text-muted);">⏱️ Oggi:</span>
-      <strong>{{ ts.minutes_studied }} min</strong>
+      <strong id="time-value">{{ ts.minutes_studied }} min</strong>
       <span style="color:var(--text-muted);">su 20 min</span>
+      <div class="progress-track" style="width:60px;" id="zen-time-track">
+        <div class="progress-fill{% if ts.over_hard %} full{% elif ts.over_soft %} warn{% endif %}"
+             id="time-fill" style="width:{{ ts.pct_hard }}%"></div>
+      </div>
     </div>
   </div>
 
-  <!-- ── Kana grid ──────────────────────────────────────── -->
-  {% if cards %}
-  <div class="section-title" style="justify-content:center;">
-    I tuoi caratteri appresi
+  <!-- ════════════════════════════════════════════════════
+       Word Discovery
+  ════════════════════════════════════════════════════ -->
+  <div class="zen-divider">Decodifica Parole 🔍</div>
+
+  <div style="max-width:520px; margin:0 auto 1.5rem;">
+
+    {% if word_count > 0 %}
+    <!-- Subtitle + word count -->
+    <div style="text-align:center; margin-bottom:1.2rem;">
+      <p style="color:var(--text-muted); font-size:.85rem;">
+        Hai <strong style="color:var(--accent-3);">{{ word_count }}</strong>
+        {{ 'parola sbloccata' if word_count == 1 else 'parole sbloccate' }}
+        con i caratteri che conosci.
+        Indovina la lettura in Romaji!
+      </p>
+    </div>
+    {% endif %}
+
+    <!-- Word puzzle container — HTMX will swap this div -->
+    {% if first_word %}
+      {% with word=first_word %}
+        {% include "zen_word_puzzle.html" %}
+      {% endwith %}
+    {% else %}
+    <div id="zen-word-puzzle" style="text-align:center; padding:2rem; background:var(--bg-glass); border:1px solid var(--border); border-radius:24px;">
+      <div style="font-size:2.5rem; margin-bottom:.8rem;">📚</div>
+      <p style="color:var(--text-muted); font-size:.88rem; margin-bottom:1rem;">
+        Impara almeno qualche carattere per sbloccare le parole da decodificare!
+      </p>
+      <a href="/learn" class="btn btn-primary" id="zen-empty-learn-btn">🌱 Vai a Impara</a>
+    </div>
+    {% endif %}
   </div>
+
+  <!-- ════════════════════════════════════════════════════
+       Kana Gallery
+  ════════════════════════════════════════════════════ -->
+  {% if cards %}
+  <div class="zen-divider">I tuoi caratteri 🎴</div>
   <div class="zen-grid">
     {% for card in cards %}
     <div class="zen-card" title="{{ card.back }} — {{ card.romanji or '' }}" id="zen-card-{{ card.id }}">
@@ -48,17 +103,11 @@
     </div>
     {% endfor %}
   </div>
-  {% else %}
-  <div style="text-align:center; padding:3rem; color:var(--text-muted);">
-    <div style="font-size:3rem; margin-bottom:1rem;">📚</div>
-    <p>Non hai ancora carte apprese. Inizia il ripasso!</p>
-    <a href="/review" class="btn btn-primary" style="margin-top:1rem;" id="zen-start-review">
-      📚 Inizia Ripasso
-    </a>
-  </div>
   {% endif %}
 
-  <!-- ── Breathing exercise ─────────────────────────────── -->
+  <!-- ════════════════════════════════════════════════════
+       Breathing exercise
+  ════════════════════════════════════════════════════ -->
   <div style="text-align:center; margin:3rem 0 2rem;">
     <div style="
       width: 120px; height: 120px;
@@ -74,11 +123,12 @@
     <p style="font-size:.82rem; color:var(--text-muted);">Esercizio di respirazione — Rilassati</p>
   </div>
 
-  <!-- ── Actions ───────────────────────────────────────── -->
+  <!-- ── Actions ─────────────────────────────────────── -->
   <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; padding-bottom:2rem;">
     <a href="/dashboard" class="btn btn-glass" id="zen-back-dash">← Dashboard</a>
     {% if not ts.over_hard %}
-    <a href="/review" class="btn btn-glass" id="zen-resume-review">📚 Riprendi Ripasso</a>
+    <a href="/learn"        class="btn btn-glass" id="zen-goto-learn">🌱 Impara</a>
+    <a href="/review/start" class="btn btn-glass" id="zen-resume-review">📚 Ripassa</a>
     {% endif %}
   </div>
 
@@ -92,13 +142,28 @@
   0%, 100% { transform: scale(1);   opacity: .7; }
   50%       { transform: scale(1.3); opacity: 1;  }
 }
+@keyframes fadeSlideIn {
+  from { opacity:0; transform: translateY(10px); }
+  to   { opacity:1; transform: translateY(0); }
+}
 </style>
 <script>
-  const phrases = ['Inspira...', 'Trattieni...', 'Espira...', 'Pausa...'];
-  let _pi = 0;
-  setInterval(() => {
-    _pi = (_pi + 1) % phrases.length;
-    document.getElementById('breathe-text').textContent = phrases[_pi];
-  }, 1500);
+const phrases = ['Inspira...', 'Trattieni...', 'Espira...', 'Pausa...'];
+let _pi = 0;
+setInterval(() => {
+  _pi = (_pi + 1) % phrases.length;
+  document.getElementById('breathe-text').textContent = phrases[_pi];
+}, 1500);
+
+// Speech synthesis helper (also used by zen_word_result.html partial)
+function speakJapanese(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang  = 'ja-JP';
+  utt.rate  = 0.85;
+  utt.pitch = 1.0;
+  window.speechSynthesis.speak(utt);
+}
 </script>
 {% endblock %}

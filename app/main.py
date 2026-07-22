@@ -299,9 +299,87 @@ async def zen_mode(request: Request, db: Session = Depends(get_db)):
         .all()
     )
     cards = [db.query(Card).filter(Card.id == uc.card_id).first() for uc in learned_ucs]
+
+    # Pre-load first word for Word Discovery
+    zen_words  = srs.get_zen_words(db, user)
+    first_word = zen_words[0] if zen_words else None
+
     return templates.TemplateResponse("zen_mode.html", {
-        "request": request, "user": user, "ts": ts,
-        "cards": [c for c in cards if c],
+        "request":    request,
+        "user":       user,
+        "ts":         ts,
+        "cards":      [c for c in cards if c],
+        "first_word": first_word,
+        "word_count": len(zen_words),
+    })
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Zen Word Discovery — HTMX partials
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@app.get("/api/zen/word", response_class=HTMLResponse)
+async def zen_word(
+    request: Request,
+    db: Session = Depends(get_db),
+    exclude: int = 0,
+):
+    """Return a random word puzzle partial (HTMX target swap)."""
+    user  = require_user(request, db)
+    words = srs.get_zen_words(db, user, exclude_id=exclude if exclude else None)
+    word  = words[0] if words else None
+    return templates.TemplateResponse("zen_word_puzzle.html", {
+        "request": request,
+        "word":    word,
+        "total":   len(words),
+    })
+
+
+@app.post("/api/zen/word/check/{word_id}", response_class=HTMLResponse)
+async def zen_word_check(word_id: int, request: Request, db: Session = Depends(get_db)):
+    """Check the user's romaji answer. Returns reveal partial if correct, feedback if wrong."""
+    user = require_user(request, db)
+    form = await request.form()
+    answer = (form.get("answer") or "").strip().lower().replace(" ", "")
+
+    word = srs.get_zen_word_by_id(word_id)
+    if not word:
+        return HTMLResponse("<div>Parola non trovata.</div>", status_code=404)
+
+    # Normalise: strip spaces, lowercase
+    correct = word["r"].lower().replace(" ", "")
+    is_correct = (answer == correct)
+
+    # Count words still available (exclude current)
+    words_left = srs.get_zen_words(db, user, exclude_id=word_id)
+
+    return templates.TemplateResponse("zen_word_result.html", {
+        "request":    request,
+        "word":       word,
+        "is_correct": is_correct,
+        "user_answer": form.get("answer", ""),
+        "has_next":   len(words_left) > 0,
+        "exclude_id": word_id,
+    })
+
+
+@app.get("/api/zen/word/hint/{word_id}", response_class=HTMLResponse)
+async def zen_word_hint(word_id: int, request: Request, db: Session = Depends(get_db)):
+    """Reveal the solution immediately with no penalty."""
+    user = require_user(request, db)
+    word = srs.get_zen_word_by_id(word_id)
+    if not word:
+        return HTMLResponse("<div>Parola non trovata.</div>", status_code=404)
+
+    words_left = srs.get_zen_words(db, user, exclude_id=word_id)
+
+    return templates.TemplateResponse("zen_word_result.html", {
+        "request":    request,
+        "word":       word,
+        "is_correct": None,   # None = shown via hint (no judgement)
+        "user_answer": "",
+        "has_next":   len(words_left) > 0,
+        "exclude_id": word_id,
     })
 
 
@@ -323,3 +401,4 @@ async def add_time(request: Request, db: Session = Depends(get_db)):
 async def get_status(request: Request, db: Session = Depends(get_db)):
     user = require_user(request, db)
     return srs.time_status(db, user)
+
