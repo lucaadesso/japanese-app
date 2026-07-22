@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — 日本語{% endblock %}
+
+{% block head %}
+<style>
+/* ── Group progress grid ──────────────────────────────── */
+.phase-section {
+  margin-bottom: 2rem;
+}
+.phase-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: .8rem;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+.phase-title {
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.phase-pct {
+  font-size: .82rem;
+  color: var(--text-muted);
+  background: var(--bg-glass);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: .2rem .75rem;
+}
+.locked-badge {
+  font-size: .72rem;
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: .2rem .75rem;
+  color: var(--text-dim);
+}
+.groups-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: .6rem;
+}
+.group-tile {
+  background: var(--bg-glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: .7rem .5rem;
+  text-align: center;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+}
+.group-tile::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+  transition: width .5s ease;
+}
+.group-tile.complete { border-color: rgba(94,231,160,.4); }
+.group-tile.complete::after { width: 100%; background: var(--accent-ok); }
+.group-tile.active  { border-color: rgba(180,111,255,.4); box-shadow: 0 0 14px rgba(180,111,255,.2); }
+.group-tile.active:hover  { transform: translateY(-3px); }
+.group-tile.locked  { opacity: .35; }
+
+.group-tile-chars {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin-bottom: .25rem;
+  line-height: 1.2;
+}
+.group-tile-label {
+  font-size: .62rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-muted);
+  margin-bottom: .3rem;
+}
+.group-tile-pct {
+  font-size: .78rem;
+  font-weight: 700;
+}
+.pct-green  { color: var(--accent-ok); }
+.pct-violet { color: var(--accent-1); }
+.pct-dim    { color: var(--text-dim); }
+
+/* group mini progress bar */
+.mini-bar {
+  height: 3px;
+  background: rgba(255,255,255,.07);
+  border-radius: 100px;
+  margin-top: .35rem;
+  overflow: hidden;
+}
+.mini-fill {
+  height: 100%;
+  border-radius: 100px;
+  background: linear-gradient(90deg, var(--accent-3), var(--accent-1));
+  transition: width .6s ease;
+}
+.mini-fill.done { background: var(--accent-ok); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- ── Greeting ─────────────────────────────────────────── -->
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+    <div>
+      <h1 style="font-size:1.7rem; font-weight:700; margin-bottom:.2rem;">
+        こんにちは、{{ user.name.split(' ')[0] }}さん！ 👋
+      </h1>
+      <p style="color:var(--text-muted); font-size:.9rem;">Pronti per studiare?</p>
+    </div>
+    <div style="display:flex; gap:.7rem; flex-wrap:wrap;">
+      {% if learn_count > 0 %}
+      <a href="/learn" class="btn btn-primary btn-lg" id="start-learn-btn">
+        🌱 Impara
+        <span style="background:rgba(255,255,255,.25); border-radius:100px; padding:.1rem .5rem; font-size:.8rem; margin-left:.3rem;">{{ learn_count }} nuove</span>
+      </a>
+      {% endif %}
+      {% if due_count > 0 %}
+      <a href="/review/start" class="btn btn-glass btn-lg" id="start-review-btn">
+        📚 Ripassa
+        <span style="background:rgba(255,255,255,.12); border-radius:100px; padding:.1rem .5rem; font-size:.8rem; margin-left:.3rem;">{{ due_count }}</span>
+      </a>
+      {% endif %}
+      {% if learn_count == 0 and due_count == 0 %}
+      <a href="/zen" class="btn btn-glass btn-lg" id="goto-zen-btn">🪷 Zen Mode</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ── Study-time bar ─────────────────────────────────── -->
+  <div style="background:var(--bg-glass); border:1px solid var(--border); border-radius:var(--radius-md); padding:1rem 1.4rem; margin-bottom:1.5rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.5rem; font-size:.85rem;">
+      <span style="color:var(--text-muted); font-weight:500;">⏱️ Tempo di studio oggi</span>
+      <span id="time-value" style="font-weight:700;">{{ ts.minutes_studied }} min</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill{% if ts.over_hard %} full{% elif ts.over_soft %} warn{% endif %}"
+           id="time-fill" style="width:{{ ts.pct_hard }}%"></div>
+    </div>
+    <div style="display:flex; justify-content:space-between; font-size:.7rem; color:var(--text-dim); margin-top:.3rem;">
+      <span>0</span><span>⚡ 15 min</span><span>🛑 20 min</span>
+    </div>
+  </div>
+
+  <!-- ── Quick stats ────────────────────────────────────── -->
+  <div class="stats-grid" style="margin-bottom:1.5rem;">
+    <div class="stat-card" style="text-align:center;">
+      <div class="stat-label">🌟 Giorni Attivi</div>
+      <div class="active-days-ring" style="margin:.8rem auto .4rem;">
+        <span class="num color-violet">{{ user.active_days_this_month }}</span>
+        <span class="sub">questo mese</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">🌱 Nuove oggi</div>
+      <div class="stat-value color-teal">{{ new_today }} / {{ max_new }}</div>
+      <div class="stat-sub">carte introdotte</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">📚 Da Ripassare</div>
+      <div class="stat-value color-pink">{{ due_count }}</div>
+      <div class="stat-sub">max 25/giorno</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">📊 Hiragana</div>
+      <div class="stat-value color-violet">{{ progress.hiragana.phase.pct_learned }}%</div>
+      <div class="stat-sub">{{ progress.hiragana.phase.learned }}/{{ progress.hiragana.phase.total }} apprese</div>
+      <div class="mini-bar" style="margin-top:.6rem;">
+        <div class="mini-fill{% if progress.hiragana.phase.pct_learned == 100 %} done{% endif %}"
+             style="width:{{ progress.hiragana.phase.pct_learned }}%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════════════════
+       Hiragana Groups
+  ═══════════════════════════════════════════════════════ -->
+  {% set GROUP_CHARS = {
+    'vowels': 'あいうえお',
+    'ka':     'かきくけこ',
+    'sa':     'さしすせそ',
+    'ta':     'たちつてと',
+    'na':     'なにぬねの',
+    'ha':     'はひふへほ',
+    'ma':     'まみむめも',
+    'ya':     'やゆよ',
+    'ra':     'らりるれろ',
+    'wa':     'わを',
+    'n':      'ん',
+  } %}
+  {% set KATA_CHARS = {
+    'vowels': 'アイウエオ',
+    'ka':     'カキクケコ',
+    'sa':     'サシスセソ',
+    'ta':     'タチツテト',
+    'na':     'ナニヌネノ',
+    'ha':     'ハヒフヘホ',
+    'ma':     'マミムメモ',
+    'ya':     'ヤユヨ',
+    'ra':     'ラリルレロ',
+    'wa':     'ワヲ',
+    'n':      'ン',
+  } %}
+
+  <div class="phase-section">
+    <div class="phase-header">
+      <div class="phase-title">🎴 Hiragana <span style="font-family:'Noto Sans JP'; color:var(--accent-1);">ひらがな</span></div>
+      <span class="phase-pct">{{ progress.hiragana.phase.learned }}/{{ progress.hiragana.phase.total }} — {{ progress.hiragana.phase.pct_learned }}%</span>
+    </div>
+    <div class="groups-grid">
+      {% set current_group = progress.current_learn %}
+      {% for g in progress.hiragana.groups %}
+        {% set is_current = current_group and current_group.phase == 'hiragana' and current_group.group == g.group %}
+        {% set tile_class = 'complete' if g.complete else ('active' if is_current else 'locked') %}
+        <div class="group-tile {{ tile_class }}" title="{{ g.learned }}/{{ g.total }} apprese">
+          <div class="group-tile-label">{{ g.group }}</div>
+          <div class="group-tile-chars">{{ GROUP_CHARS.get(g.group, '') }}</div>
+          <div class="group-tile-pct {% if g.complete %}pct-green{% elif is_current %}pct-violet{% else %}pct-dim{% endif %}">
+            {% if g.complete %}✅{% elif is_current %}{{ g.pct_learned }}%{% else %}🔒{% endif %}
+          </div>
+          <div class="mini-bar">
+            <div class="mini-fill{% if g.complete %} done{% endif %}"
+                 style="width:{{ g.pct_learned }}%"></div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    {% if progress.current_learn and progress.current_learn.phase == 'hiragana' %}
+    <div style="margin-top:.8rem; font-size:.82rem; color:var(--text-muted);">
+      ▶ Gruppo corrente: <strong style="color:var(--accent-1);">{{ progress.current_learn.group }}</strong>
+      — {{ progress.current_learn.progress.learned }}/{{ progress.current_learn.progress.total }} apprese
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       Katakana Groups
+  ═══════════════════════════════════════════════════════ -->
+  <div class="phase-section">
+    <div class="phase-header">
+      <div class="phase-title">🎌 Katakana <span style="font-family:'Noto Sans JP'; color:var(--accent-2);">カタカナ</span></div>
+      {% if progress.katakana.unlocked %}
+      <span class="phase-pct">{{ progress.katakana.phase.learned }}/{{ progress.katakana.phase.total }} — {{ progress.katakana.phase.pct_learned }}%</span>
+      {% else %}
+      <span class="locked-badge">🔒 Sblocca all'80% Hiragana (ora {{ progress.hiragana.phase.pct_learned }}%)</span>
+      {% endif %}
+    </div>
+    {% if progress.katakana.unlocked %}
+    <div class="groups-grid">
+      {% for g in progress.katakana.groups %}
+        {% set is_current = progress.current_learn and progress.current_learn.phase == 'katakana' and progress.current_learn.group == g.group %}
+        {% set tile_class = 'complete' if g.complete else ('active' if is_current else 'locked') %}
+        <div class="group-tile {{ tile_class }}">
+          <div class="group-tile-label">{{ g.group }}</div>
+          <div class="group-tile-chars">{{ KATA_CHARS.get(g.group, '') }}</div>
+          <div class="group-tile-pct {% if g.complete %}pct-green{% elif is_current %}pct-violet{% else %}pct-dim{% endif %}">
+            {% if g.complete %}✅{% elif is_current %}{{ g.pct_learned }}%{% else %}🔒{% endif %}
+          </div>
+          <div class="mini-bar">
+            <div class="mini-fill{% if g.complete %} done{% endif %}"
+                 style="width:{{ g.pct_learned }}%"></div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="groups-grid" style="opacity:.3; pointer-events:none;">
+      {% for g in progress.katakana.groups %}
+      <div class="group-tile locked">
+        <div class="group-tile-label">{{ g.group }}</div>
+        <div class="group-tile-chars" style="font-family:'Noto Sans JP';">{{ KATA_CHARS.get(g.group, '') }}</div>
+        <div class="group-tile-pct pct-dim">🔒</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       Vocaboli / Kanji (locked)
+  ═══════════════════════════════════════════════════════ -->
+  <div class="phase-section" style="opacity:.4;">
+    <div class="phase-header">
+      <div class="phase-title">📖 Vocaboli & Kanji</div>
+      <span class="locked-badge">🔒 Disponibile dopo i Kana</span>
+    </div>
+    <div style="background:var(--bg-glass); border:1px solid var(--border); border-radius:var(--radius-md); padding:1rem 1.4rem; font-size:.85rem; color:var(--text-dim);">
+      300-500 parole ad alta frequenza + radicali dei Kanji. Sbloccato quando Hiragana e Katakana sono completati.
+    </div>
+  </div>
+
+  <!-- ── Actions ───────────────────────────────────────── -->
+  <div class="divider"></div>
+  <div style="display:flex; gap:.8rem; flex-wrap:wrap;">
+    <a href="/learn"        class="btn btn-glass" id="dash-learn-link">🌱 Impara</a>
+    <a href="/review/start" class="btn btn-glass" id="dash-review-link">📚 Ripassa</a>
+    <a href="/zen"          class="btn btn-glass" id="dash-zen-link">🪷 Zen</a>
+  </div>
+
+</div>
+{% endblock %}

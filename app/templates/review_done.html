@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Sessione Completata — 日本語{% endblock %}
+
+{% block content %}
+<div class="container-sm" style="text-align:center; padding-top:4rem;">
+  <div style="font-size:4rem; margin-bottom:1rem;">🎉</div>
+  <h1 style="font-size:1.8rem; font-weight:700; margin-bottom:.6rem;">
+    Sessione completata!
+  </h1>
+  <p style="color:var(--text-muted); margin-bottom:2rem;">
+    Hai terminato tutte le carte di oggi. Torna domani per continuare!
+  </p>
+
+  <div style="background:var(--bg-glass); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.8rem; margin-bottom:2rem;">
+    <div style="font-size:.8rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.8rem;">
+      Tempo studiato oggi
+    </div>
+    <div style="font-size:3rem; font-weight:700; color:var(--accent-1);">
+      {{ ts.minutes_studied }} min
+    </div>
+    <div class="progress-track" style="margin:1rem auto; max-width:250px;">
+      <div class="progress-fill{% if ts.over_soft %} warn{% endif %}"
+           style="width:{{ ts.pct_hard }}%"></div>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+    <a href="/dashboard" class="btn btn-primary" id="done-dash-btn">← Dashboard</a>
+    <a href="/zen"       class="btn btn-glass"   id="done-zen-btn">🪷 Zen Mode</a>
+  </div>
+</div>
+{% endblock %}

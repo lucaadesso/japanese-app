@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{% block description %}App gamificata per l'apprendimento del giapponese con SRS adattivo{% endblock %}">
+  <title>{% block title %}日本語 — Japanese Learning{% endblock %}</title>
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind from CDN (utility classes supplement) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- App CSS -->
+  <link rel="stylesheet" href="/static/css/style.css">
+
+  <!-- HTMX -->
+  <script src="https://unpkg.com/htmx.org@2.0.3" defer></script>
+
+  {% block head %}{% endblock %}
+</head>
+<body class="page">
+
+  {% if user is defined and user %}
+  <nav>
+    <a href="/dashboard" class="nav-brand">
+      <span class="jp">日</span>
+      <span>Japanese</span>
+    </a>
+    <div class="nav-right">
+      <a href="/learn"        class="btn btn-glass btn-sm" id="nav-learn-btn">🌱 Impara</a>
+      <a href="/review/start" class="btn btn-glass btn-sm" id="nav-review-btn">📚 Ripassa</a>
+      <a href="/zen"          class="btn btn-glass btn-sm" id="nav-zen-btn">🪷 Zen</a>
+      <span class="nav-name">{{ user.name.split(' ')[0] }}</span>
+      {% if user.picture %}
+        <img src="{{ user.picture }}" alt="Avatar" class="nav-avatar">
+      {% endif %}
+      <a href="/auth/logout" class="btn btn-glass btn-sm" id="nav-logout-btn">Esci</a>
+    </div>
+  </nav>
+  {% endif %}
+
+  {% block content %}{% endblock %}
+
+  <script>
+    // ── Study-time heartbeat (pauses when window loses focus) ────
+    {% if user is defined and user %}
+    let _lastSent      = Date.now();
+    let _zenRedirected = false;
+    let _focused       = !document.hidden;   // track focus state
+
+    // When tab/window is hidden or blurred → send accumulated time, then pause
+    // When visible/focused again → reset _lastSent so we don't double-count the gap
+
+    function _sendAccumulated() {
+      const now   = Date.now();
+      const delta = Math.round((now - _lastSent) / 1000);
+      _lastSent   = now;    // reset BEFORE the async call
+      if (delta < 1) return;
+      fetch('/api/time', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({seconds: delta})
+      }).then(r => r.json()).then(data => {
+        updateTimerUI(data);
+        if (data.over_hard && !_zenRedirected) {
+          _zenRedirected = true;
+          window.location.href = '/zen';
+        }
+      }).catch(() => {});
+    }
+
+    function _onPause() {
+      if (!_focused) return;
+      _focused = false;
+      _sendAccumulated();          // flush time before pausing
+    }
+    function _onResume() {
+      if (_focused) return;
+      _focused  = true;
+      _lastSent = Date.now();      // reset clock — gap time NOT counted
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      document.hidden ? _onPause() : _onResume();
+    });
+    window.addEventListener('blur',  _onPause);
+    window.addEventListener('focus', _onResume);
+
+    // Periodic heartbeat — only sends when focused
+    setInterval(() => {
+      if (_focused) _sendAccumulated();
+    }, 10000);
+
+    function updateTimerUI(data) {
+      const fill = document.getElementById('time-fill');
+      const val  = document.getElementById('time-value');
+      if (!fill || !val) return;
+      fill.style.width = data.pct_hard + '%';
+      fill.className   = 'progress-fill' +
+        (data.over_hard ? ' full' : data.over_soft ? ' warn' : '');
+      val.textContent  = data.minutes_studied + ' min';
+    }
+    {% endif %}
+  </script>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>
