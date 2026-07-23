@@ -36,8 +36,13 @@ class User(Base):
 
     # active-days / rest-points gamification
     active_days_this_month = Column(Integer, default=0)
-    rest_points = Column(Integer, default=0)
-    last_active_date = Column(Date, nullable=True)
+    rest_points            = Column(Integer, default=0)
+    last_active_date       = Column(Date, nullable=True)
+
+    # ── User-configurable daily targets ────────────────────
+    target_daily_minutes   = Column(Integer, default=20)   # soft cap in minutes
+    target_daily_new_cards = Column(Integer, default=5)    # new cards per day via Learn
+    strict_mode            = Column(Boolean, default=False) # True → hard redirect to Zen
 
     reviews = relationship("ReviewLog", back_populates="user", cascade="all, delete-orphan")
     daily_studies = relationship("DailyStudy", back_populates="user", cascade="all, delete-orphan")
@@ -70,7 +75,9 @@ class UserCard(Base):
     card_id = Column(Integer, ForeignKey("cards.id"), nullable=False, index=True)
 
     # SRS stage: 0=unseen, 1=introduced via Learn, 2+=active SRS
-    srs_stage = Column(Integer, default=0)
+    srs_stage       = Column(Integer, default=0)
+    # Date when srs_stage first went from 0→1 (Learn introduction)
+    introduced_date = Column(Date, nullable=True)
     # SM-2 fields
     interval = Column(Integer, default=1)       # days until next review
     repetitions = Column(Integer, default=0)    # successful reviews in a row

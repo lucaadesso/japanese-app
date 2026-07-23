@@ -219,11 +219,12 @@ def get_current_learn_group(db: Session, user: User) -> Optional[dict]:
     return None   # everything complete
 
 
-def get_learn_cards_for_session(db: Session, user: User, limit: int = NEW_LEARN_PER_DAY) -> list[UserCard]:
+def get_learn_cards_for_session(db: Session, user: User, limit: Optional[int] = None) -> list[UserCard]:
     """
     Get up to `limit` unseen UserCards (srs_stage=0) from the current group,
-    respecting daily new-card cap.
+    respecting the user's personal daily new-card target.
     """
+    cap = limit if limit is not None else (user.target_daily_new_cards or NEW_LEARN_PER_DAY)
     current = get_current_learn_group(db, user)
     if not current:
         return []
@@ -231,21 +232,19 @@ def get_learn_cards_for_session(db: Session, user: User, limit: int = NEW_LEARN_
     phase = current["phase"]
     group = current["group"]
 
-    # Count how many new cards already introduced today
     already_today = count_new_learned_today(db, user)
-    remaining_slots = max(0, limit - already_today)
+    remaining_slots = max(0, cap - already_today)
     if remaining_slots == 0:
         return []
 
-    # Get unseen UserCards for this group
     unseen = (
         db.query(UserCard)
         .join(Card, UserCard.card_id == Card.id)
         .filter(
-            UserCard.user_id == user.id,
-            UserCard.srs_stage == 0,
-            Card.phase == phase,
-            Card.group_name == group,
+            UserCard.user_id    == user.id,
+            UserCard.srs_stage  == 0,
+            Card.phase          == phase,
+            Card.group_name     == group,
         )
         .order_by(Card.id)
         .limit(remaining_slots)
@@ -255,15 +254,14 @@ def get_learn_cards_for_session(db: Session, user: User, limit: int = NEW_LEARN_
 
 
 def count_new_learned_today(db: Session, user: User) -> int:
-    """Count cards that moved from srs_stage=0→1 today."""
+    """Count cards introduced via Learn TODAY (uses introduced_date, not last_reviewed)."""
     from datetime import date as _date
     today = _date.today()
     return (
         db.query(UserCard)
         .filter(
-            UserCard.user_id == user.id,
-            UserCard.srs_stage >= 1,
-            UserCard.last_reviewed == today,
+            UserCard.user_id       == user.id,
+            UserCard.introduced_date == today,    # set only by mark_card_learned()
         )
         .count()
     )
@@ -271,11 +269,12 @@ def count_new_learned_today(db: Session, user: User) -> int:
 
 def mark_card_learned(db: Session, uc: UserCard) -> UserCard:
     """Mark a UserCard as introduced via Learn (srs_stage=1, is_new=False)."""
-    uc.srs_stage     = 1
-    uc.is_new        = False
-    uc.last_reviewed = date.today()
-    # Set initial due date for first SRS review: tomorrow
-    uc.due_date      = date.today() + timedelta(days=1)
+    today = date.today()
+    uc.srs_stage      = 1
+    uc.is_new         = False
+    uc.last_reviewed  = today
+    uc.introduced_date = today          # ← track when this card was first introduced
+    uc.due_date       = today + timedelta(days=1)
     db.commit()
     db.refresh(uc)
     return uc
@@ -413,18 +412,26 @@ def is_over_hard_limit(db: Session, user: User) -> bool:
 
 
 def time_status(db: Session, user: User) -> dict:
-    seconds = get_today_seconds(db, user)
-    pct_hard = min(100, int(seconds / HARD_LIMIT_SECONDS * 100))
-    pct_soft = min(100, int(seconds / SOFT_LIMIT_SECONDS * 100))
+    """Return time status using the user's personal daily target."""
+    seconds      = get_today_seconds(db, user)
+    target_secs  = (user.target_daily_minutes or 20) * 60
+    soft_secs    = int(target_secs * 0.75)  # soft warn at 75% of target
+    pct_target   = min(100, int(seconds / target_secs * 100))
+    pct_soft     = min(100, int(seconds / soft_secs   * 100))
     return {
-        "seconds_studied": seconds,
-        "soft_limit": SOFT_LIMIT_SECONDS,
-        "hard_limit": HARD_LIMIT_SECONDS,
-        "pct_soft": pct_soft,
-        "pct_hard": pct_hard,
-        "over_soft": seconds >= SOFT_LIMIT_SECONDS,
-        "over_hard": seconds >= HARD_LIMIT_SECONDS,
-        "minutes_studied": round(seconds / 60, 1),
+        "seconds_studied":      seconds,
+        "target_seconds":       target_secs,
+        "soft_limit":           SOFT_LIMIT_SECONDS,    # kept for compatibility
+        "hard_limit":           HARD_LIMIT_SECONDS,
+        "target_daily_minutes": user.target_daily_minutes or 20,
+        "strict_mode":          bool(user.strict_mode),
+        "pct_soft":             pct_soft,
+        "pct_hard":             pct_target,            # rename alias kept for templates
+        "pct_target":           pct_target,
+        "over_soft":            seconds >= soft_secs,
+        "over_hard":            seconds >= target_secs,
+        "over_target":          seconds >= target_secs,
+        "minutes_studied":      round(seconds / 60, 1),
     }
 
 

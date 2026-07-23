@@ -82,7 +82,8 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
     srs.ensure_user_cards(db, user)
     ts = srs.time_status(db, user)
 
-    if ts["over_hard"]:
+    # In soft-cap mode, don't hard-redirect from dashboard
+    if ts["over_hard"] and user.strict_mode:
         return RedirectResponse(url="/zen")
 
     due_count  = len(srs.get_due_cards(db, user))
@@ -90,15 +91,29 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
     learn_info = srs.get_learn_cards_for_session(db, user)
     new_today  = srs.count_new_learned_today(db, user)
 
+    # Cards introduced TODAY for the "learned today" display
+    from app.models import Card as CardModel
+    from datetime import date
+    introduced_today_ucs = (
+        db.query(UserCard)
+        .filter(UserCard.user_id == user.id, UserCard.introduced_date == date.today())
+        .all()
+    )
+    learned_today_cards = [
+        db.query(CardModel).filter(CardModel.id == uc.card_id).first()
+        for uc in introduced_today_ucs
+    ]
+
     return templates.TemplateResponse("dashboard.html", {
-        "request":    request,
-        "user":       user,
-        "ts":         ts,
-        "due_count":  due_count,
-        "progress":   progress,
-        "learn_count": len(learn_info),
-        "new_today":  new_today,
-        "max_new":    srs.NEW_LEARN_PER_DAY,
+        "request":           request,
+        "user":              user,
+        "ts":                ts,
+        "due_count":         due_count,
+        "progress":          progress,
+        "learn_count":       len(learn_info),
+        "new_today":         new_today,
+        "max_new":           user.target_daily_new_cards or srs.NEW_LEARN_PER_DAY,
+        "learned_today_cards": [c for c in learned_today_cards if c],
     })
 
 
@@ -113,7 +128,8 @@ async def learn_home(request: Request, db: Session = Depends(get_db)):
     srs.ensure_user_cards(db, user)
     ts = srs.time_status(db, user)
 
-    if ts["over_hard"]:
+    # Hard redirect only in strict mode
+    if ts["over_hard"] and user.strict_mode:
         return RedirectResponse(url="/zen")
 
     current_group = srs.get_current_learn_group(db, user)
@@ -128,8 +144,10 @@ async def learn_home(request: Request, db: Session = Depends(get_db)):
         "current_group": current_group,
         "learn_cards":   learn_cards,
         "new_today":     new_today,
-        "max_new":       srs.NEW_LEARN_PER_DAY,
+        "max_new":       user.target_daily_new_cards or srs.NEW_LEARN_PER_DAY,
         "progress":      progress,
+        "over_target":   ts["over_target"],
+        "show_soft_warning": ts["over_target"] and not user.strict_mode,
     })
 
 
@@ -139,14 +157,14 @@ async def learn_card(request: Request, db: Session = Depends(get_db)):
     user = require_user(request, db)
     ts   = srs.time_status(db, user)
 
-    if ts["over_hard"]:
+    if ts["over_hard"] and user.strict_mode:
         return RedirectResponse(url="/zen")
 
     session_cards = srs.get_learn_cards_for_session(db, user)
     if not session_cards:
-        # All new cards for today done
         return templates.TemplateResponse("learn_done.html", {
             "request": request, "user": user, "ts": ts,
+            "over_limit": False, "congratulate": True,
         })
 
     uc   = session_cards[0]
@@ -154,12 +172,13 @@ async def learn_card(request: Request, db: Session = Depends(get_db)):
     remaining = len(session_cards)
 
     return templates.TemplateResponse("learn_card.html", {
-        "request":   request,
-        "user":      user,
-        "uc":        uc,
-        "card":      card,
-        "remaining": remaining,
-        "ts":        ts,
+        "request":           request,
+        "user":              user,
+        "uc":                uc,
+        "card":              card,
+        "remaining":         remaining,
+        "ts":                ts,
+        "show_soft_warning": ts["over_target"] and not user.strict_mode,
     })
 
 
@@ -178,24 +197,25 @@ async def submit_learn(uc_id: int, request: Request, db: Session = Depends(get_d
 
     # Mark as learned (srs_stage=1)
     srs.mark_card_learned(db, uc)
-
-    # Accrue study time
     seconds = max(1, time_ms // 1000)
     srs.add_study_seconds(db, user, seconds)
     db.commit()
 
     ts = srs.time_status(db, user)
-
-    # Check if over hard limit after completing this card
     remaining = srs.get_learn_cards_for_session(db, user)
-    if ts["over_hard"] or not remaining:
-        congratulate = not remaining
+
+    if not remaining:
         return templates.TemplateResponse("learn_done.html", {
-            "request":     request,
-            "user":        user,
-            "ts":          ts,
-            "over_limit":  ts["over_hard"],
-            "congratulate": congratulate,
+            "request":     request, "user": user, "ts": ts,
+            "over_limit":  ts["over_target"],
+            "congratulate": True,
+        })
+
+    # Over target but not strict mode → continue, soft warning shown by next card page
+    if ts["over_target"] and user.strict_mode:
+        return templates.TemplateResponse("learn_done.html", {
+            "request":      request, "user": user, "ts": ts,
+            "over_limit":   True, "congratulate": False,
         })
 
     return RedirectResponse(url="/learn/card", status_code=303)
@@ -227,7 +247,7 @@ async def review_page(request: Request, db: Session = Depends(get_db)):
     user = require_user(request, db)
     ts   = srs.time_status(db, user)
 
-    if ts["over_hard"]:
+    if ts["over_hard"] and user.strict_mode:
         return RedirectResponse(url="/zen")
 
     due_cards = srs.get_due_cards(db, user)
@@ -241,13 +261,14 @@ async def review_page(request: Request, db: Session = Depends(get_db)):
     remaining = len(due_cards)
 
     return templates.TemplateResponse("review.html", {
-        "request":   request,
-        "user":      user,
-        "uc":        first_uc,
-        "card":      card,
-        "remaining": remaining,
-        "ts":        ts,
-        "over_soft": ts["over_soft"],
+        "request":           request,
+        "user":              user,
+        "uc":                first_uc,
+        "card":              card,
+        "remaining":         remaining,
+        "ts":                ts,
+        "over_soft":         ts["over_soft"],
+        "show_soft_warning": ts["over_target"] and not user.strict_mode,
     })
 
 
@@ -402,3 +423,47 @@ async def get_status(request: Request, db: Session = Depends(get_db)):
     user = require_user(request, db)
     return srs.time_status(db, user)
 
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Settings
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@app.get("/settings", response_class=HTMLResponse)
+async def settings_page(request: Request, db: Session = Depends(get_db)):
+    user  = require_user(request, db)
+    ts    = srs.time_status(db, user)
+    saved = request.query_params.get("saved") == "1"
+    return templates.TemplateResponse("settings.html", {
+        "request": request,
+        "user":    user,
+        "ts":      ts,
+        "saved":   saved,
+    })
+
+
+@app.post("/settings", response_class=HTMLResponse)
+async def save_settings(request: Request, db: Session = Depends(get_db)):
+    user = require_user(request, db)
+    form = await request.form()
+
+    # Parse and validate inputs
+    try:
+        minutes = int(form.get("target_daily_minutes", 20))
+        minutes = max(5, min(120, minutes))   # clamp 5–120 min
+    except (ValueError, TypeError):
+        minutes = 20
+
+    try:
+        new_cards = int(form.get("target_daily_new_cards", 5))
+        new_cards = max(1, min(20, new_cards))
+    except (ValueError, TypeError):
+        new_cards = 5
+
+    strict = form.get("strict_mode") == "1"
+
+    user.target_daily_minutes   = minutes
+    user.target_daily_new_cards = new_cards
+    user.strict_mode            = strict
+    db.commit()
+
+    return RedirectResponse(url="/settings?saved=1", status_code=303)

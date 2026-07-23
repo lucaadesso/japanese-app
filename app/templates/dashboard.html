@@ -143,14 +143,20 @@
   <div style="background:var(--bg-glass); border:1px solid var(--border); border-radius:var(--radius-md); padding:1rem 1.4rem; margin-bottom:1.5rem;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.5rem; font-size:.85rem;">
       <span style="color:var(--text-muted); font-weight:500;">⏱️ Tempo di studio oggi</span>
-      <span id="time-value" style="font-weight:700;">{{ ts.minutes_studied }} min</span>
+      <div style="display:flex; align-items:center; gap:.6rem;">
+        <span id="time-value" style="font-weight:700;">{{ ts.minutes_studied }} min</span>
+        <span style="color:var(--text-dim); font-size:.75rem;">/ {{ ts.target_daily_minutes }} min</span>
+        <a href="/settings" style="color:var(--text-dim); font-size:.7rem; text-decoration:none;" title="Modifica obiettivo">⚙️</a>
+      </div>
     </div>
     <div class="progress-track">
-      <div class="progress-fill{% if ts.over_hard %} full{% elif ts.over_soft %} warn{% endif %}"
-           id="time-fill" style="width:{{ ts.pct_hard }}%"></div>
+      <div class="progress-fill{% if ts.over_target %} full{% elif ts.over_soft %} warn{% endif %}"
+           id="time-fill" style="width:{{ ts.pct_target }}%"></div>
     </div>
     <div style="display:flex; justify-content:space-between; font-size:.7rem; color:var(--text-dim); margin-top:.3rem;">
-      <span>0</span><span>⚡ 15 min</span><span>🛑 20 min</span>
+      <span>0</span>
+      <span>⚡ {{ (ts.target_daily_minutes * 0.75) | int }} min</span>
+      <span>🎯 {{ ts.target_daily_minutes }} min</span>
     </div>
   </div>
 
@@ -164,9 +170,26 @@
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">🌱 Nuove oggi</div>
+      <div class="stat-label">🌱 Imparate oggi</div>
       <div class="stat-value color-teal">{{ new_today }} / {{ max_new }}</div>
       <div class="stat-sub">carte introdotte</div>
+      {% if learned_today_cards %}
+      <div style="display:flex; flex-wrap:wrap; gap:.25rem; margin-top:.6rem; justify-content:center;">
+        {% for c in learned_today_cards %}
+        <span style="
+          font-family:'Noto Sans JP',sans-serif;
+          font-size:1.1rem;
+          background: rgba(94,231,223,.12);
+          border: 1px solid rgba(94,231,223,.25);
+          border-radius: 8px;
+          padding: .15rem .4rem;
+          color: var(--accent-3);
+        " title="{{ c.back }}">{{ c.front }}</span>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div style="font-size:.72rem; color:var(--text-dim); margin-top:.4rem;">Nessuna carta introdotta oggi</div>
+      {% endif %}
     </div>
     <div class="stat-card">
       <div class="stat-label">📚 Da Ripassare</div>
