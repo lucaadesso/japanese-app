@@ -262,8 +262,7 @@ function speakText(text) {
   setTimeout(() => window.speechSynthesis.speak(utt), 100);
 }
 
-// Auto-play on load
-speakText('{{ card.front }}');
+// Removed auto-play on load
 const CORRECT_ROMANJI = {{ (card.romanji or '') | tojson }};
 
 let _cardStart   = Date.now();
@@ -336,6 +335,8 @@ function checkAnswer() {
   const inp = document.getElementById('answer-input');
   inp.disabled = true;
   inp.classList.add(_wasCorrect ? 'correct' : 'wrong');
+
+  speakText('{{ card.front }}'); // Play audio after submission
 
   // Show revealed answer on card
   document.getElementById('answer-reveal').style.display = 'block';

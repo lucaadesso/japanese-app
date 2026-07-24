@@ -543,6 +543,10 @@ function speakText(text) {
   setTimeout(() => window.speechSynthesis.speak(utt), 100);
 }
 
+{% if not uc.fast_lane %}
+speakText('{{ card.front }}'); // Play during study phase
+{% endif %}
+
 // ── Pause overlay (mirrors review.html) ─────────────────────────
 function showPause() {
   document.getElementById('pause-overlay').classList.add('visible');
@@ -607,7 +611,7 @@ function startQuiz() {
   document.getElementById('study-phase').style.display = 'none';
   document.getElementById('quiz-phase').style.display  = 'block';
   document.getElementById('quiz-input').focus();
-  speakText('{{ card.front }}'); // Auto-play when quiz starts
+  // Removed auto-play from startQuiz
 
   _quizStart = Date.now();
 
@@ -637,6 +641,8 @@ function checkAnswer() {
   inp.disabled = true;
   inp.classList.add(_wasCorrect ? 'correct' : 'wrong');
   document.getElementById('verify-btn').disabled = true;
+
+  speakText('{{ card.front }}'); // Play audio after answering
 
   const panel = document.getElementById('feedback-panel');
   const fMain = document.getElementById('feedback-main');
