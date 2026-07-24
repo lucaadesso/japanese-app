@@ -13,7 +13,7 @@ Key features:
 from __future__ import annotations
 
 import math
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from typing import Optional
 
 from sqlalchemy.orm import Session
@@ -182,7 +182,7 @@ def sm2_update(uc: UserCard, quality: int) -> UserCard:
         MIN_EASE,
         uc.ease_factor + 0.1 - (5 - q) * (0.08 + (5 - q) * 0.02),
     )
-    uc.due_date      = date.today() + timedelta(days=uc.interval)
+    uc.due_date      = datetime.now() + timedelta(days=uc.interval)
     uc.last_reviewed = date.today()
     uc.is_new        = False
     if uc.srs_stage < 2:
@@ -274,7 +274,7 @@ def mark_card_learned(db: Session, uc: UserCard) -> UserCard:
     uc.is_new         = False
     uc.last_reviewed  = today
     uc.introduced_date = today          # ← track when this card was first introduced
-    uc.due_date       = today + timedelta(days=1)
+    uc.due_date       = datetime.now() + timedelta(minutes=10)
     db.commit()
     db.refresh(uc)
     return uc
@@ -290,7 +290,7 @@ def get_due_cards(db: Session, user: User, limit: int = DAILY_CARD_CAP) -> list[
         .filter(
             UserCard.user_id == user.id,
             UserCard.srs_stage >= 1,
-            UserCard.due_date <= today,
+            UserCard.due_date <= datetime.now(),
         )
         .order_by(UserCard.due_date)
         .limit(limit)
