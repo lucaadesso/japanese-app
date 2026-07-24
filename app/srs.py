@@ -32,7 +32,8 @@ UNLOCK_THRESHOLD    = 0.80        # 80%
 
 # ─── Group ordering (sequential unlock within phase) ─────────────────────────
 HIRAGANA_GROUP_ORDER = [
-    "vowels", "ka", "sa", "ta", "na", "ha", "ma", "ya", "ra", "wa", "n"
+    "vowels", "ka", "sa", "ta", "na", "ha", "ma", "ya", "ra", "wa", "n",
+    "dakuten", "handakuten", "yoon", "sokuon"
 ]
 KATAKANA_GROUP_ORDER = [
     "vowels", "ka", "sa", "ta", "na", "ha", "ma", "ya", "ra", "wa", "n"
@@ -97,6 +98,74 @@ HIRAGANA_DATA = [
     ("を", "wo", "wo",  "wa", "Come la lettera 'o' con un cappello: 'wo'"),
     # N
     ("ん", "n",  "n",   "n",  "Come una onda (wave) che finisce in 'n'"),
+    
+    # ─── Hiragana 1.5: Dakuten (゛) ─────────────────────────────────────────────
+    ("が", "ga", "ga",  "dakuten", "K + trattini (゛) = G"),
+    ("ぎ", "gi", "gi",  "dakuten", "K + trattini (゛) = G"),
+    ("ぐ", "gu", "gu",  "dakuten", "K + trattini (゛) = G"),
+    ("げ", "ge", "ge",  "dakuten", "K + trattini (゛) = G"),
+    ("ご", "go", "go",  "dakuten", "K + trattini (゛) = G"),
+    ("ざ", "za", "za",  "dakuten", "S + trattini (゛) = Z"),
+    ("じ", "ji", "ji",  "dakuten", "Shi + trattini = Ji"),
+    ("ず", "zu", "zu",  "dakuten", "Su + trattini = Zu"),
+    ("ぜ", "ze", "ze",  "dakuten", "S + trattini (゛) = Z"),
+    ("ぞ", "zo", "zo",  "dakuten", "S + trattini (゛) = Z"),
+    ("だ", "da", "da",  "dakuten", "T + trattini (゛) = D"),
+    ("ぢ", "ji", "ji",  "dakuten", "Chi + trattini = Ji (raro)"),
+    ("づ", "zu", "zu",  "dakuten", "Tsu + trattini = Zu (raro)"),
+    ("で", "de", "de",  "dakuten", "Te + trattini = De"),
+    ("ど", "do", "do",  "dakuten", "To + trattini = Do"),
+    ("ば", "ba", "ba",  "dakuten", "H + trattini (゛) = B"),
+    ("び", "bi", "bi",  "dakuten", "H + trattini (゛) = B"),
+    ("ぶ", "bu", "bu",  "dakuten", "H + trattini (゛) = B"),
+    ("べ", "be", "be",  "dakuten", "H + trattini (゛) = B"),
+    ("ぼ", "bo", "bo",  "dakuten", "H + trattini (゛) = B"),
+    
+    # ─── Hiragana 1.5: Handakuten (゜) ─────────────────────────────────────────
+    ("ぱ", "pa", "pa",  "handakuten", "H + pallino (゜) = P"),
+    ("ぴ", "pi", "pi",  "handakuten", "H + pallino (゜) = P"),
+    ("ぷ", "pu", "pu",  "handakuten", "H + pallino (゜) = P"),
+    ("ぺ", "pe", "pe",  "handakuten", "H + pallino (゜) = P"),
+    ("ぽ", "po", "po",  "handakuten", "H + pallino (゜) = P"),
+    
+    # ─── Hiragana 1.5: Yoon (Combinazioni con ya/yu/yo) ─────────────────────
+    ("きゃ", "kya", "kya", "yoon", "Ki + ya piccolo"),
+    ("きゅ", "kyu", "kyu", "yoon", "Ki + yu piccolo"),
+    ("きょ", "kyo", "kyo", "yoon", "Ki + yo piccolo"),
+    ("しゃ", "sha", "sha", "yoon", "Shi + ya piccolo"),
+    ("しゅ", "shu", "shu", "yoon", "Shi + yu piccolo"),
+    ("しょ", "sho", "sho", "yoon", "Shi + yo piccolo"),
+    ("ちゃ", "cha", "cha", "yoon", "Chi + ya piccolo"),
+    ("ちゅ", "chu", "chu", "yoon", "Chi + yu piccolo"),
+    ("ちょ", "cho", "cho", "yoon", "Chi + yo piccolo"),
+    ("にゃ", "nya", "nya", "yoon", "Ni + ya piccolo"),
+    ("にゅ", "nyu", "nyu", "yoon", "Ni + yu piccolo"),
+    ("にょ", "nyo", "nyo", "yoon", "Ni + yo piccolo"),
+    ("ひゃ", "hya", "hya", "yoon", "Hi + ya piccolo"),
+    ("ひゅ", "hyu", "hyu", "yoon", "Hi + yu piccolo"),
+    ("ひょ", "hyo", "hyo", "yoon", "Hi + yo piccolo"),
+    ("みゃ", "mya", "mya", "yoon", "Mi + ya piccolo"),
+    ("みゅ", "myu", "myu", "yoon", "Mi + yu piccolo"),
+    ("みょ", "myo", "myo", "yoon", "Mi + yo piccolo"),
+    ("りゃ", "rya", "rya", "yoon", "Ri + ya piccolo"),
+    ("りゅ", "ryu", "ryu", "yoon", "Ri + yu piccolo"),
+    ("りょ", "ryo", "ryo", "yoon", "Ri + yo piccolo"),
+    
+    ("ぎゃ", "gya", "gya", "yoon", "Gi + ya piccolo"),
+    ("ぎゅ", "gyu", "gyu", "yoon", "Gi + yu piccolo"),
+    ("ぎょ", "gyo", "gyo", "yoon", "Gi + yo piccolo"),
+    ("じゃ", "ja", "ja",  "yoon", "Ji + ya piccolo"),
+    ("じゅ", "ju", "ju",  "yoon", "Ji + yu piccolo"),
+    ("じょ", "jo", "jo",  "yoon", "Ji + yo piccolo"),
+    ("びゃ", "bya", "bya", "yoon", "Bi + ya piccolo"),
+    ("びゅ", "byu", "byu", "yoon", "Bi + yu piccolo"),
+    ("びょ", "byo", "byo", "yoon", "Bi + yo piccolo"),
+    ("ぴゃ", "pya", "pya", "yoon", "Pi + ya piccolo"),
+    ("ぴゅ", "pyu", "pyu", "yoon", "Pi + yu piccolo"),
+    ("ぴょ", "pyo", "pyo", "yoon", "Pi + yo piccolo"),
+
+    # ─── Hiragana 1.5: Sokuon (Piccolo Tsu) ─────────────────────────────────
+    ("っ", "(doppia)", "sokuon", "sokuon", "Piccolo Tsu: Raddoppia la consonante successiva"),
 ]
 
 # ─── Katakana seed data: (front, back, romanji, group, mnemonic note) ────────
@@ -541,96 +610,6 @@ try:
         w["k"] = set(w["k"])
 except FileNotFoundError:
     ZEN_VOCAB = []
- = [
-    # ── Vowels only ──────────────────────────────────────────────────────────
-    {"id":  1, "j": "あい",     "r": "ai",      "m": "Amore",          "k": {"あ","い"}},
-    {"id":  2, "j": "いえ",     "r": "ie",      "m": "Casa",            "k": {"い","え"}},
-    {"id":  3, "j": "うえ",     "r": "ue",      "m": "Sopra / Su",      "k": {"う","え"}},
-    {"id":  4, "j": "いう",     "r": "iu",      "m": "Dire",            "k": {"い","う"}},
-    {"id":  5, "j": "おい",     "r": "oi",      "m": "Nipote (m)",      "k": {"お","い"}},
-    {"id":  6, "j": "あおい",   "r": "aoi",     "m": "Azzurro / Blu",   "k": {"あ","お","い"}},
-    # ── + Ka-row ─────────────────────────────────────────────────────────────
-    {"id":  7, "j": "かい",     "r": "kai",     "m": "Conchiglia",      "k": {"か","い"}},
-    {"id":  8, "j": "いか",     "r": "ika",     "m": "Calamaro",        "k": {"い","か"}},
-    {"id":  9, "j": "かお",     "r": "kao",     "m": "Viso / Faccia",   "k": {"か","お"}},
-    {"id": 10, "j": "こい",     "r": "koi",     "m": "Carpa / Amore romantico", "k": {"こ","い"}},
-    {"id": 11, "j": "きく",     "r": "kiku",    "m": "Crisantemo / Ascoltare", "k": {"き","く"}},
-    {"id": 12, "j": "いく",     "r": "iku",     "m": "Andare",          "k": {"い","く"}},
-    {"id": 13, "j": "うき",     "r": "uki",     "m": "Galleggiante",    "k": {"う","き"}},
-    {"id": 14, "j": "おか",     "r": "oka",     "m": "Collina",         "k": {"お","か"}},
-    {"id": 15, "j": "あかい",   "r": "akai",    "m": "Rosso",           "k": {"あ","か","い"}},
-    {"id": 16, "j": "おおきい", "r": "ookii",   "m": "Grande",          "k": {"お","き","い"}},
-    {"id": 17, "j": "こえ",     "r": "koe",     "m": "Voce",            "k": {"こ","え"}},
-    {"id": 18, "j": "かく",     "r": "kaku",    "m": "Scrivere",        "k": {"か","く"}},
-    # ── + Sa-row ─────────────────────────────────────────────────────────────
-    {"id": 19, "j": "さかな",   "r": "sakana",  "m": "Pesce",           "k": {"さ","か","な"}},
-    {"id": 20, "j": "すき",     "r": "suki",    "m": "Piacere / Ti voglio bene", "k": {"す","き"}},
-    {"id": 21, "j": "あさ",     "r": "asa",     "m": "Mattina",         "k": {"あ","さ"}},
-    {"id": 22, "j": "かさ",     "r": "kasa",    "m": "Ombrello",        "k": {"か","さ"}},
-    {"id": 23, "j": "しお",     "r": "shio",    "m": "Sale",            "k": {"し","お"}},
-    {"id": 24, "j": "いす",     "r": "isu",     "m": "Sedia",           "k": {"い","す"}},
-    {"id": 25, "j": "かし",     "r": "kashi",   "m": "Dolce / Pasticcino", "k": {"か","し"}},
-    {"id": 26, "j": "うそ",     "r": "uso",     "m": "Bugia",           "k": {"う","そ"}},
-    {"id": 27, "j": "あおさ",   "r": "aosa",    "m": "Alghe verdi",     "k": {"あ","お","さ"}},
-    {"id": 28, "j": "しか",     "r": "shika",   "m": "Cervo",           "k": {"し","か"}},
-    {"id": 29, "j": "すいか",   "r": "suika",   "m": "Anguria",         "k": {"す","い","か"}},
-    {"id": 30, "j": "おかし",   "r": "okashi",  "m": "Dolci / Strano",  "k": {"お","か","し"}},
-    {"id": 31, "j": "うさぎ",   "r": "usagi",   "m": "Coniglio",        "k": {"う","さ","ぎ"}},
-    {"id": 32, "j": "くさ",     "r": "kusa",    "m": "Erba / Pianta",   "k": {"く","さ"}},
-    {"id": 33, "j": "すこし",   "r": "sukoshi", "m": "Un poco",         "k": {"す","こ","し"}},
-    # ── + Ta-row ─────────────────────────────────────────────────────────────
-    {"id": 34, "j": "たかい",   "r": "takai",   "m": "Alto / Costoso",  "k": {"た","か","い"}},
-    {"id": 35, "j": "うた",     "r": "uta",     "m": "Canzone",         "k": {"う","た"}},
-    {"id": 36, "j": "した",     "r": "shita",   "m": "Sotto / Lingua",  "k": {"し","た"}},
-    {"id": 37, "j": "つき",     "r": "tsuki",   "m": "Luna / Mese",     "k": {"つ","き"}},
-    {"id": 38, "j": "いたい",   "r": "itai",    "m": "Fa male!",        "k": {"い","た"}},
-    {"id": 39, "j": "ちかい",   "r": "chikai",  "m": "Vicino",          "k": {"ち","か","い"}},
-    {"id": 40, "j": "たて",     "r": "tate",    "m": "Verticale",       "k": {"た","て"}},
-    {"id": 41, "j": "てつ",     "r": "tetsu",   "m": "Ferro / Acciaio", "k": {"て","つ"}},
-    {"id": 42, "j": "かた",     "r": "kata",    "m": "Spalla / Forma",  "k": {"か","た"}},
-    {"id": 43, "j": "おとこ",   "r": "otoko",   "m": "Uomo",            "k": {"お","と","こ"}},
-    {"id": 44, "j": "つくえ",   "r": "tsukue",  "m": "Scrivania",       "k": {"つ","く","え"}},
-    {"id": 45, "j": "おとうさん","r": "otousan", "m": "Papà",            "k": {"お","と","う","さ"}},
-    {"id": 46, "j": "かっこいい","r": "kakkoii", "m": "Figo / Bello",    "k": {"か","こ","い"}},
-    {"id": 47, "j": "ちず",     "r": "chizu",   "m": "Mappa",           "k": {"ち","ず"}},
-    {"id": 48, "j": "しかた",   "r": "shikata", "m": "Modo / Metodo",   "k": {"し","か","た"}},
-    # ── + Na-row ─────────────────────────────────────────────────────────────
-    {"id": 49, "j": "なに",     "r": "nani",    "m": "Cosa? / Che?",    "k": {"な","に"}},
-    {"id": 50, "j": "にく",     "r": "niku",    "m": "Carne",           "k": {"に","く"}},
-    {"id": 51, "j": "いぬ",     "r": "inu",     "m": "Cane",            "k": {"い","ぬ"}},
-    {"id": 52, "j": "さかな",   "r": "sakana",  "m": "Pesce",           "k": {"さ","か","な"}},
-    {"id": 53, "j": "のり",     "r": "nori",    "m": "Alga nori",       "k": {"の","り"}},
-    {"id": 54, "j": "なつ",     "r": "natsu",   "m": "Estate",          "k": {"な","つ"}},
-    {"id": 55, "j": "きのこ",   "r": "kinoko",  "m": "Fungo",           "k": {"き","の","こ"}},
-    {"id": 56, "j": "にし",     "r": "nishi",   "m": "Ovest",           "k": {"に","し"}},
-    # ── + Ha-row ─────────────────────────────────────────────────────────────
-    {"id": 57, "j": "はな",     "r": "hana",    "m": "Fiore / Naso",    "k": {"は","な"}},
-    {"id": 58, "j": "はし",     "r": "hashi",   "m": "Bacchette / Ponte", "k": {"は","し"}},
-    {"id": 59, "j": "ふく",     "r": "fuku",    "m": "Vestiti",         "k": {"ふ","く"}},
-    {"id": 60, "j": "ほし",     "r": "hoshi",   "m": "Stella",          "k": {"ほ","し"}},
-    {"id": 61, "j": "ひと",     "r": "hito",    "m": "Persona",         "k": {"ひ","と"}},
-    {"id": 62, "j": "はいく",   "r": "haiku",   "m": "Haiku (poesia)",  "k": {"は","い","く"}},
-    {"id": 63, "j": "ふたつ",   "r": "futatsu", "m": "Due (cose)",      "k": {"ふ","た","つ"}},
-    {"id": 64, "j": "ひかり",   "r": "hikari",  "m": "Luce",            "k": {"ひ","か","り"}},
-    # ── + Ma-row ─────────────────────────────────────────────────────────────
-    {"id": 65, "j": "まち",     "r": "machi",   "m": "Città / Quartiere","k": {"ま","ち"}},
-    {"id": 66, "j": "みず",     "r": "mizu",    "m": "Acqua",           "k": {"み","ず"}},
-    {"id": 67, "j": "むし",     "r": "mushi",   "m": "Insetto",         "k": {"む","し"}},
-    {"id": 68, "j": "もも",     "r": "momo",    "m": "Pesca (frutto)",  "k": {"も"}},
-    {"id": 69, "j": "うみ",     "r": "umi",     "m": "Mare",            "k": {"う","み"}},
-    {"id": 70, "j": "さむい",   "r": "samui",   "m": "Freddo",          "k": {"さ","む","い"}},
-    {"id": 71, "j": "まいにち", "r": "mainichi","m": "Ogni giorno",      "k": {"ま","い","に","ち"}},
-    {"id": 72, "j": "みかん",   "r": "mikan",   "m": "Mandarino",       "k": {"み","か","ん"}},
-    # ── + Ya/Ra/Wa-row ───────────────────────────────────────────────────────
-    {"id": 73, "j": "やま",     "r": "yama",    "m": "Montagna",        "k": {"や","ま"}},
-    {"id": 74, "j": "ゆき",     "r": "yuki",    "m": "Neve",            "k": {"ゆ","き"}},
-    {"id": 75, "j": "よる",     "r": "yoru",    "m": "Notte",           "k": {"よ","る"}},
-    {"id": 76, "j": "やすい",   "r": "yasui",   "m": "Economico / Facile", "k": {"や","す","い"}},
-    {"id": 77, "j": "りんご",   "r": "ringo",   "m": "Mela",            "k": {"り","ん","ご"}},
-    {"id": 78, "j": "さくら",   "r": "sakura",  "m": "Ciliegio / Sakura","k": {"さ","く","ら"}},
-    {"id": 79, "j": "わたし",   "r": "watashi", "m": "Io / Me",         "k": {"わ","た","し"}},
-    {"id": 80, "j": "るす",     "r": "rusu",    "m": "Assente / Fuori", "k": {"る","す"}},
-]
 
 
 def get_user_learned_kana(db: Session, user: User) -> frozenset[str]:

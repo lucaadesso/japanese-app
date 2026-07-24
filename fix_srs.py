@@ -16,12 +16,9 @@ except FileNotFoundError:
     ZEN_VOCAB = []
 """
 
-# Find ZEN_VOCAB = [ ... ] 
-start_idx = content.find("ZEN_VOCAB: list[dict] = [")
-end_idx = content.find("]", start_idx) + 1
-
-new_content = content[:start_idx] + replacement + content[end_idx:]
+pattern = re.compile(r"ZEN_VOCAB:\s*list\[dict\]\s*=\s*\[.*?^\]", re.MULTILINE | re.DOTALL)
+new_content = pattern.sub(replacement, content)
 
 with open("app/srs.py", "w", encoding="utf-8") as f:
     f.write(new_content)
-print("Done")
+print("Done regex")
