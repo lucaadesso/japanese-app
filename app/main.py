@@ -474,19 +474,13 @@ async def placement_test(request: Request, db: Session = Depends(get_db)):
     if not user:
         return RedirectResponse(url="/", status_code=303)
     
-    # Store quiz data in session so we can validate it
-    hiragana_quiz = srs.generate_placement_quiz("hiragana", 5)
-    katakana_quiz = srs.generate_placement_quiz("katakana", 5)
-    
-    request.session["placement_quiz"] = {
-        "hiragana": [{"id": q["id"], "answer": q["answer"]} for q in hiragana_quiz],
-        "katakana": [{"id": q["id"], "answer": q["answer"]} for q in katakana_quiz]
-    }
-    
+    # Pass groups for adaptive test
     return templates.TemplateResponse("placement.html", {
         "request": request,
-        "hiragana_quiz": hiragana_quiz,
-        "katakana_quiz": katakana_quiz
+        "hiragana_groups": srs.HIRAGANA_GROUP_ORDER,
+        "katakana_groups": srs.KATAKANA_GROUP_ORDER,
+        "h_data": srs.HIRAGANA_DATA,
+        "k_data": srs.KATAKANA_DATA
     })
 
 @app.post("/placement/submit", response_class=HTMLResponse)
@@ -496,26 +490,13 @@ async def submit_placement(request: Request, db: Session = Depends(get_db)):
         return RedirectResponse(url="/", status_code=303)
     
     form = await request.form()
-    quiz_data = request.session.get("placement_quiz", {})
-    if not quiz_data:
-        return RedirectResponse(url="/dashboard", status_code=303)
     
-    # Evaluate Hiragana
-    h_correct = 0
-    for q in quiz_data.get("hiragana", []):
-        if form.get(f"h_{q['id']}") == q["answer"]:
-            h_correct += 1
-            
-    # Evaluate Katakana
-    k_correct = 0
-    for q in quiz_data.get("katakana", []):
-        if form.get(f"k_{q['id']}") == q["answer"]:
-            k_correct += 1
-            
-    # If >= 4/5, fast track
-    if h_correct >= 4:
-        srs.fast_track_phase(db, user, "hiragana")
-    if k_correct >= 4:
-        srs.fast_track_phase(db, user, "katakana")
+    h_idx = int(form.get("hiragana_max_idx", -1))
+    k_idx = int(form.get("katakana_max_idx", -1))
+    
+    if h_idx >= 0:
+        srs.enable_fast_lane(db, user, "hiragana", h_idx)
+    if k_idx >= 0:
+        srs.enable_fast_lane(db, user, "katakana", k_idx)
         
     return RedirectResponse(url="/dashboard", status_code=303)
