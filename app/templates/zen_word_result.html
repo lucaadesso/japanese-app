@@ -36,6 +36,8 @@
     margin-bottom: .4rem;
     {% if is_correct == true %}
     background: linear-gradient(135deg, #5ee7a0, #5ee7df);
+    {% elif is_correct == false and force_other %}
+    background: linear-gradient(135deg, #ffbe55, #ff6b6b);
     {% elif is_correct == false %}
     background: linear-gradient(135deg, #ff6b6b, #ffbe55);
     {% else %}
@@ -57,7 +59,11 @@
     margin-bottom: .8rem;
   ">{{ word.m }}</div>
 
-  {% if is_correct == false and user_answer %}
+  {% if is_correct == false and force_other %}
+    <div style="font-size:1rem; font-weight:600; color:var(--accent-warn); margin-bottom:1rem;">
+      Giusto, ma sai già questa variante! Riprova con uno degli altri significati (o con il romaji).
+    </div>
+  {% elif is_correct == false and user_answer %}
   <div style="font-size:.82rem; color:var(--text-muted); margin-bottom:.8rem;">
     Hai risposto: «<em>{{ user_answer }}</em>» — La risposta corretta è «<strong>{{ word.r }}</strong>»
   </div>

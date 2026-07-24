@@ -123,7 +123,7 @@ class ZenWordProgress(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     word_id = Column(Integer, nullable=False, index=True)
     
-    step1_correct_count = Column(Integer, default=0)
+    step1_progress = Column(String, default="[]")  # JSON list of ints
     step2_correct_count = Column(Integer, default=0)
     last_reviewed = Column(DateTime, nullable=True)
 

@@ -658,8 +658,17 @@ def get_zen_words(db: Session, user: User, exclude_id: Optional[int] = None) -> 
             continue
             
         p = progress_map.get(w["id"])
-        step1 = p.step1_correct_count if p else 0
-        step2 = p.step2_correct_count if p else 0
+        if p:
+            import json
+            try:
+                arr = json.loads(p.step1_progress)
+                step1 = sum(arr) if arr else 0
+            except:
+                step1 = 0
+            step2 = p.step2_correct_count
+        else:
+            step1 = 0
+            step2 = 0
         
         if step2 >= 10:
             if random.random() < 0.9:
@@ -693,16 +702,25 @@ def get_zen_words(db: Session, user: User, exclude_id: Optional[int] = None) -> 
     random.shuffle(available)
     return available
 
-def record_zen_word_success(db: Session, user: User, word_id: int, step: int):
+def record_zen_word_success(db: Session, user: User, word_id: int, step: int, match_idx: int = -1, total_variants: int = 1):
     from app.models import ZenWordProgress
     from datetime import datetime
+    import json
     p = db.query(ZenWordProgress).filter(ZenWordProgress.user_id == user.id, ZenWordProgress.word_id == word_id).first()
     if not p:
-        p = ZenWordProgress(user_id=user.id, word_id=word_id, step1_correct_count=0, step2_correct_count=0)
+        p = ZenWordProgress(user_id=user.id, word_id=word_id, step1_progress="[]", step2_correct_count=0)
         db.add(p)
     
     if step == 1:
-        p.step1_correct_count += 1
+        try:
+            arr = json.loads(p.step1_progress)
+        except:
+            arr = []
+        if len(arr) != total_variants:
+            arr = [0] * total_variants
+        if 0 <= match_idx < total_variants:
+            arr[match_idx] += 1
+        p.step1_progress = json.dumps(arr)
     elif step == 2:
         p.step2_correct_count += 1
     
