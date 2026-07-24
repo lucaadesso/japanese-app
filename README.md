@@ -5,11 +5,11 @@ Un'app gamificata per imparare il giapponese (Hiragana e Katakana) con SRS adatt
 ## 1. Principi di Gamification (NON PUNITIVA)
 * Nessun meccanismo punitivo (niente vite o cuori che si consumano).
 * Gestione flessibile della streak tramite "Giorni Attivi Mensili" e "Punti Riposo".
-* Limite massimo di studio guidato: **15-20 minuti al giorno**.
-  * A 15 min: avviso soft (continua pure o vai in Zen Mode).
-  * A 20 min: redirect automatico in Zen Mode (hard limit).
-* Nella sezione `/learn`: al raggiungimento del limite, si completa la carta corrente, si congratula l'utente e si reindirizza alla Zen Mode.
-* Algoritmo SRS con **Capping del backlog** a max 25 carte/giorno (review) e max 5 carte/giorno (learn).
+* **Limiti di studio giornaliero personalizzabili** (tramite la pagina Impostazioni):
+  * **Minuti al giorno** (default: 20 min): Al raggiungimento del limite soft si riceve un avviso. Al raggiungimento del limite hard si viene reindirizzati alla Zen Mode.
+  * **Nuove carte al giorno** (default: 5 carte): Capping del backlog per l'introduzione di nuovi concetti nella sezione `/learn`.
+* Capping del backlog anche per i ripassi (review): max 25 carte al giorno per evitare sovraccarico.
+* Nella sezione `/learn`: al raggiungimento del limite di nuove carte introdotte o del tempo giornaliero, la sessione si ferma per non sovraccaricare la memoria.
 * Il timer si **ferma automaticamente** quando la finestra perde il focus (blur / visibilitychange).
 
 ## 2. Percorso Didattico Progressivo
