@@ -381,14 +381,22 @@ async def zen_word_check(word_id: int, request: Request, db: Session = Depends(g
     user = require_user(request, db)
     form = await request.form()
     answer = (form.get("answer") or "").strip().lower().replace(" ", "")
+    step = int(form.get("step") or 1)
 
     word = srs.get_zen_word_by_id(word_id)
     if not word:
         return HTMLResponse("<div>Parola non trovata.</div>", status_code=404)
 
-    # Normalise: strip spaces, lowercase
-    correct = word["r"].lower().replace(" ", "")
-    is_correct = (answer == correct)
+    is_correct = False
+    if step == 1:
+        correct = word["r"].lower().replace(" ", "")
+        is_correct = (answer == correct)
+    else:
+        correct = word["j"].replace(" ", "")
+        is_correct = (answer == correct)
+
+    if is_correct:
+        srs.record_zen_word_success(db, user, word_id, step)
 
     # Count words still available (exclude current)
     words_left = srs.get_zen_words(db, user, exclude_id=word_id)

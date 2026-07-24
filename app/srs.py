@@ -644,16 +644,70 @@ def get_zen_words(db: Session, user: User, exclude_id: Optional[int] = None) -> 
     Words are randomised.
     """
     import random
+    from app.models import ZenWordProgress
     learned = get_user_learned_kana(db, user)
     if not learned:
         return []
 
-    available = [
-        w for w in ZEN_VOCAB
-        if w["k"].issubset(learned) and w["id"] != exclude_id
-    ]
+    progress_records = db.query(ZenWordProgress).filter(ZenWordProgress.user_id == user.id).all()
+    progress_map = {p.word_id: p for p in progress_records}
+
+    available = []
+    for w in ZEN_VOCAB:
+        if not w["k"].issubset(learned) or w["id"] == exclude_id:
+            continue
+            
+        p = progress_map.get(w["id"])
+        step1 = p.step1_correct_count if p else 0
+        step2 = p.step2_correct_count if p else 0
+        
+        if step2 >= 10:
+            if random.random() < 0.9:
+                continue
+            step = 2
+        elif step1 >= 5:
+            step = 2
+        else:
+            step = 1
+            
+        word_data = dict(w)
+        word_data["step"] = step
+        
+        if step == 2:
+            correct_chars = list(word_data["j"])
+            distractors = list(learned)
+            random.shuffle(distractors)
+            
+            symbols = list(correct_chars)
+            while len(symbols) < 10:
+                if distractors:
+                    symbols.append(distractors.pop())
+                else:
+                    symbols.append(random.choice(HIRAGANA_DATA)[0])
+            
+            random.shuffle(symbols)
+            word_data["symbols"] = symbols
+            
+        available.append(word_data)
+
     random.shuffle(available)
     return available
+
+def record_zen_word_success(db: Session, user: User, word_id: int, step: int):
+    from app.models import ZenWordProgress
+    from datetime import datetime
+    p = db.query(ZenWordProgress).filter(ZenWordProgress.user_id == user.id, ZenWordProgress.word_id == word_id).first()
+    if not p:
+        p = ZenWordProgress(user_id=user.id, word_id=word_id)
+        db.add(p)
+    
+    if step == 1:
+        p.step1_correct_count += 1
+    elif step == 2:
+        p.step2_correct_count += 1
+    
+    p.last_reviewed = datetime.now()
+    db.commit()
 
 
 def get_zen_word_by_id(word_id: int) -> Optional[dict]:
