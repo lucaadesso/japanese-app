@@ -507,8 +507,18 @@
 
       {# ── Form actions ────────────────────────────────────── #}
       <div class="form-actions">
+        <!-- Lingua -->
+        <div class="form-group">
+          <label class="form-label">🌐 {{ t('settings.language') }}</label>
+          <select name="language" class="form-control">
+            <option value="it" {% if user.language == 'it' %}selected{% endif %}>Italiano</option>
+            <option value="en" {% if user.language == 'en' %}selected{% endif %}>English</option>
+          </select>
+          <div class="form-help">Scegli la lingua dell'interfaccia.</div>
+        </div>
+
         <button type="submit" class="btn btn-primary btn-full">
-          💾 Salva Impostazioni
+          💾 {{ t('settings.save') }}
         </button>
         <a href="/" class="btn btn-glass btn-full btn-back">
           ← Dashboard

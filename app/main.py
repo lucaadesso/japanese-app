@@ -27,6 +27,8 @@ from app.auth import get_current_user, require_user, router as auth_router, _Log
 from app.database import Base, engine, get_db
 from app.models import Card, ReviewLog, UserCard
 from app import srs
+from app.i18n import get_translator
+from app import models
 
 # ─── App & Middleware ─────────────────────────────────────────────────────────
 
@@ -72,12 +74,16 @@ async def index(request: Request, db: Session = Depends(get_db)):
     if user:
         return RedirectResponse(url="/dashboard")
     error = request.query_params.get("error")
-    return templates.TemplateResponse("login.html", {"request": request, "error": error})
+    t = get_translator(user.language if user else 'it')
+    return templates.TemplateResponse("login.html", {"request": request, "t": t, "error": error})
 
 
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard(request: Request, db: Session = Depends(get_db)):
     user = require_user(request, db)
+    if not user:
+        return RedirectResponse(url="/")
+    t = get_translator(user.language)
     srs.update_active_days(db, user)
     srs.ensure_user_cards(db, user)
     ts = srs.time_status(db, user)
@@ -114,6 +120,7 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
         "new_today":         new_today,
         "max_new":           user.target_daily_new_cards or srs.NEW_LEARN_PER_DAY,
         "learned_today_cards": [c for c in learned_today_cards if c],
+        "t": t
     })
 
 
@@ -434,11 +441,13 @@ async def settings_page(request: Request, db: Session = Depends(get_db)):
     user  = require_user(request, db)
     ts    = srs.time_status(db, user)
     saved = request.query_params.get("saved") == "1"
+    t = get_translator(user.language if user else 'it')
     return templates.TemplateResponse("settings.html", {
+        "t": t,
         "request": request,
         "user":    user,
         "ts":      ts,
-        "saved":   saved,
+        "saved":   saved
     })
 
 
@@ -462,8 +471,12 @@ async def update_settings(request: Request, db: Session = Depends(get_db)):
         
     user.target_daily_minutes   = minutes
     user.target_daily_new_cards = new_cards
+    language = form.get("language")
+    if language in ["it", "en"]:
+        user.language = language
+    user.strict_mode = form.get("strict_mode") == "on"
     db.commit()
-    return RedirectResponse(url="/dashboard", status_code=303)
+    return RedirectResponse(url="/settings?saved=1", status_code=303)
 
 
 # ─── Placement Test ──────────────────────────────────────────────────────────
