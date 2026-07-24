@@ -698,7 +698,7 @@ def record_zen_word_success(db: Session, user: User, word_id: int, step: int):
     from datetime import datetime
     p = db.query(ZenWordProgress).filter(ZenWordProgress.user_id == user.id, ZenWordProgress.word_id == word_id).first()
     if not p:
-        p = ZenWordProgress(user_id=user.id, word_id=word_id)
+        p = ZenWordProgress(user_id=user.id, word_id=word_id, step1_correct_count=0, step2_correct_count=0)
         db.add(p)
     
     if step == 1:
