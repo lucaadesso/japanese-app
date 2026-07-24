@@ -380,7 +380,8 @@ async def zen_word_check(word_id: int, request: Request, db: Session = Depends(g
     """Check the user's romaji answer. Returns reveal partial if correct, feedback if wrong."""
     user = require_user(request, db)
     form = await request.form()
-    answer = (form.get("answer") or "").strip().lower().replace(" ", "")
+    raw_answer = (form.get("answer") or "").strip().lower()
+    answer = raw_answer.replace(" ", "")
     step = int(form.get("step") or 1)
 
     word = srs.get_zen_word_by_id(word_id)
@@ -389,8 +390,24 @@ async def zen_word_check(word_id: int, request: Request, db: Session = Depends(g
 
     is_correct = False
     if step == 1:
-        correct = word["r"].lower().replace(" ", "")
-        is_correct = (answer == correct)
+        import difflib
+        correct_r = word["r"].lower().replace(" ", "")
+        
+        # Levenshtein / ratio check function
+        def is_match(a, b):
+            if a == b: return True
+            if len(a) > 3 and difflib.SequenceMatcher(None, a, b).ratio() >= 0.8: return True
+            return False
+            
+        if is_match(answer, correct_r):
+            is_correct = True
+        else:
+            # Check meanings
+            meanings = [m.strip().lower().replace(" ", "") for m in word["m"].split("/")]
+            for m in meanings:
+                if is_match(answer, m) or is_match(raw_answer, m):
+                    is_correct = True
+                    break
     else:
         correct = word["j"].replace(" ", "")
         is_correct = (answer == correct)
