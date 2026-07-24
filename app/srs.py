@@ -530,7 +530,18 @@ def ensure_user_cards(db: Session, user: User) -> None:
 # kana_set = frozenset of individual kana characters that compose the word.
 # Only hiragana words for now; katakana words added once unlocked.
 # Meanings in Italian.
-ZEN_VOCAB: list[dict] = [
+import json
+import os
+
+ZEN_VOCAB_PATH = os.path.join(os.path.dirname(__file__), "data", "zen_vocab.json")
+try:
+    with open(ZEN_VOCAB_PATH, "r", encoding="utf-8") as f:
+        ZEN_VOCAB = json.load(f)
+    for w in ZEN_VOCAB:
+        w["k"] = set(w["k"])
+except FileNotFoundError:
+    ZEN_VOCAB = []
+ = [
     # ── Vowels only ──────────────────────────────────────────────────────────
     {"id":  1, "j": "あい",     "r": "ai",      "m": "Amore",          "k": {"あ","い"}},
     {"id":  2, "j": "いえ",     "r": "ie",      "m": "Casa",            "k": {"い","え"}},
