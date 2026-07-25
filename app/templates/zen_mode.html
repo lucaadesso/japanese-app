@@ -139,9 +139,7 @@ function speakJapanese(text) {
   utt.rate  = 0.85;
   utt.pitch = 1.0;
   // Delay slightly to prevent the first syllable from being truncated
-  setTimeout(() => {
-    window.speechSynthesis.speak(utt);
-  }, 100);
+  setTimeout(() => window.speechSynthesis.speak(utt), 250);
 }
 </script>
 {% endblock %}

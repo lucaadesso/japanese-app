@@ -133,9 +133,7 @@ function speakJapanese(text) {
   utt.lang  = 'ja-JP';
   utt.rate  = 0.85;
   utt.pitch = 1.0;
-  setTimeout(() => {
-    window.speechSynthesis.speak(utt);
-  }, 100);
+  setTimeout(() => window.speechSynthesis.speak(utt), 250);
 }
 
 // Auto-play on load
