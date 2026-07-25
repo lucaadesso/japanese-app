@@ -108,9 +108,19 @@
 
     function _sendAccumulated() {
       const now   = Date.now();
-      const delta = Math.round((now - _lastSent) / 1000);
+      let delta = Math.round((now - _lastSent) / 1000);
       _lastSent   = now;
-      if (delta < 1) return;
+      
+      const path = window.location.pathname;
+      const isStudyPage = path.startsWith('/learn') || path.startsWith('/review');
+      if (!isStudyPage) {
+          delta = 0; // Solo le sessioni attive contano come studio
+      }
+      
+      if (delta < 1 && isStudyPage) return; // evoca fetch solo se ci sono secondi o se siamo su una pagina non-studio (per aggiornare UI passivamente? In realtà possiamo evitare il ping se delta = 0 e non serve aggiornare la UI frequentemente. Ma facciamo ping ogni tanto per tenere aggiornata l'UI).
+      // Actually, better: if delta==0 and not study page, maybe we just ping every 10s? 
+      // The interval below is every 10s anyway.
+      
       fetch('/api/time', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
