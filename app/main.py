@@ -599,13 +599,55 @@ async def path_page(request: Request, db: Session = Depends(get_db)):
     if not user:
         return RedirectResponse(url="/", status_code=303)
         
+    import json
+    import os
+    levels_path = os.path.join(os.path.dirname(__file__), "data", "levels.json")
+    try:
+        with open(levels_path, "r", encoding="utf-8") as f:
+            levels = json.load(f)
+    except FileNotFoundError:
+        levels = []
+
     progress = {
         "hiragana": srs.get_phase_progress(db, user, "hiragana"),
         "katakana": srs.get_phase_progress(db, user, "katakana"),
     }
     
+    # Calculate Zen words in step 2 or learned
+    from app.models import ZenWordProgress
+    zen_progresses = db.query(ZenWordProgress).filter(ZenWordProgress.user_id == user.id).all()
+    zen_step2_count = 0
+    for zp in zen_progresses:
+        # Check if they passed step 1
+        try:
+            arr = json.loads(zp.step1_progress)
+            step1 = sum(arr) if arr else 0
+        except:
+            step1 = 0
+        if zp.step2_correct_count > 0 or step1 >= 5:
+            zen_step2_count += 1
+
+    total_h = progress["hiragana"]["total"]
+    total_k = progress["katakana"]["total"]
+    learned_h = progress["hiragana"]["learned"]
+    learned_k = progress["katakana"]["learned"]
+    
+    # Calculate global level 0 progress
+    reqs = levels[0]["requirements"] if levels else {"zen_words_step2": 146}
+    zen_target = reqs["zen_words_step2"]
+    
+    total_req = total_h + total_k + zen_target
+    total_done = learned_h + learned_k + zen_step2_count
+    lv0_pct = int((total_done / total_req) * 100) if total_req else 0
+
     return templates.TemplateResponse("path.html", {
         "request": request,
         "user": user,
-        "progress": progress
+        "levels": levels,
+        "progress": progress,
+        "zen_step2_count": zen_step2_count,
+        "zen_target": zen_target,
+        "lv0_pct": lv0_pct,
+        "lv0_done": total_done,
+        "lv0_req": total_req
     })

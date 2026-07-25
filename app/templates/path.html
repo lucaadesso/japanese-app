@@ -94,6 +94,19 @@ ul.perks li {
     font-size: 0.9rem;
     color: var(--text-primary);
 }
+.mini-reqs {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 0.4rem;
+    flex-wrap: wrap;
+}
+.mini-reqs span {
+    background: rgba(255,255,255,0.05);
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+}
 </style>
 {% endblock %}
 
@@ -106,83 +119,48 @@ ul.perks li {
         </p>
     </div>
 
-    <!-- Livello 0 -->
-    {% set hira_pct = progress.hiragana.pct_learned %}
-    <div class="level-card active">
-        <div class="level-header">
-            <div class="level-title">🌱 Livello 0: Fondamenta</div>
-            <div class="level-badge">IN CORSO</div>
-        </div>
-        <div class="level-desc">
-            Questa è la fase iniziale. L'obiettivo è abituare il cervello alla lingua e ai sistemi di scrittura base prima ancora di studiare grammatica complessa e Kanji.
-        </div>
-        <ul class="perks">
-            <li>✅ <strong>Alfabeto:</strong> Imparerai l'Hiragana e il Katakana.</li>
-            <li>✅ <strong>Esposizione Passiva:</strong> Nella Zen Mode, assorbirai i primi 146 vocaboli base senza pressione.</li>
-            <li>✅ <strong>Nessuna grammatica:</strong> Solo assorbimento di suoni e forme.</li>
-        </ul>
+    {% for lvl in levels %}
+        {% set is_lv0 = (lvl.id == 0) %}
+        {% set is_active = is_lv0 and lv0_pct < 100 %}
+        {% set is_completed = is_lv0 and lv0_pct == 100 %}
+        {% set is_locked = not is_lv0 and lv0_pct < 100 %}
         
-        <div class="progress-container">
-            <div class="progress-fill" style="width: {{ hira_pct }}%;"></div>
+        <div class="level-card {% if is_active %}active{% elif is_completed %}completed{% else %}locked{% endif %}">
+            <div class="level-header">
+                <div class="level-title">{{ lvl.title }}</div>
+                <div class="level-badge">
+                    {% if is_active %}{{ lvl.badge_active }}{% elif is_completed %}{{ lvl.badge_completed }}{% else %}{{ lvl.badge_locked }}{% endif %}
+                </div>
+            </div>
+            
+            <div class="level-desc">
+                {{ lvl.desc }}
+            </div>
+            
+            {% if lvl.perks %}
+            <ul class="perks">
+                {% for perk in lvl.perks %}
+                <li>{{ perk | safe }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            
+            {% if is_lv0 %}
+            <div class="progress-container">
+                <div class="progress-fill" style="width: {{ lv0_pct }}%;"></div>
+            </div>
+            <div class="level-stats">
+                <span>Completamento Globale (Hiragana, Katakana, Vocaboli base)</span>
+                <span>{{ lv0_done }} / {{ lv0_req }} ({{ lv0_pct }}%)</span>
+            </div>
+            <div class="mini-reqs">
+                <span>Hiragana: {{ progress.hiragana.learned }}/{{ progress.hiragana.total }}</span>
+                <span>Katakana: {{ progress.katakana.learned }}/{{ progress.katakana.total }}</span>
+                <span>Vocaboli Zen (Step 2): {{ zen_step2_count }}/{{ zen_target }}</span>
+            </div>
+            {% endif %}
         </div>
-        <div class="level-stats">
-            <span>Avanzamento Hiragana</span>
-            <span>{{ progress.hiragana.learned }} / {{ progress.hiragana.total }} ({{ hira_pct }}%)</span>
-        </div>
-    </div>
-
-    <!-- Livello 1 -->
-    <div class="level-card {% if hira_pct == 100 %}active{% else %}locked{% endif %}">
-        <div class="level-header">
-            <div class="level-title">🗣️ JLPT N5: Sopravvivenza</div>
-            <div class="level-badge">~800 Vocaboli</div>
-        </div>
-        <div class="level-desc">
-            Il primo livello ufficiale. Sbloccato una volta padroneggiati i Kana. Inizierai a costruire il tuo vocabolario base e la grammatica fondamentale.
-        </div>
-        <ul class="perks">
-            <li>🔒 <strong>Primi Kanji:</strong> Imparerai circa 100 Kanji essenziali (numeri, giorni, elementi naturali).</li>
-            <li>🔒 <strong>Struttura Frase:</strong> Soggetto + Oggetto + Verbo. Particelle base (wa, ga, o, ni, de).</li>
-            <li>🔒 <strong>Uso pratico:</strong> Salutare, ordinare cibo, chiedere indicazioni.</li>
-        </ul>
-    </div>
-
-    <!-- Livello 2 -->
-    <div class="level-card locked">
-        <div class="level-header">
-            <div class="level-title">📱 JLPT N4: Principiante Avanzato</div>
-            <div class="level-badge">~1.500 Vocaboli</div>
-        </div>
-        <div class="level-desc">
-            Inizi a muoverti in autonomia in Giappone. Livello richiesto per molti lavori entry-level.
-        </div>
-        <ul class="perks">
-            <li>🔒 <strong>Kanji:</strong> Circa 300 Kanji totali.</li>
-            <li>🔒 <strong>Comunicazione:</strong> Conversazioni quotidiane a velocità lenta.</li>
-        </ul>
-    </div>
-
-    <!-- Livello 3 -->
-    <div class="level-card locked">
-        <div class="level-header">
-            <div class="level-title">🤝 JLPT N3: Intermedio</div>
-            <div class="level-badge">~3.700 Vocaboli</div>
-        </div>
-        <div class="level-desc">
-            Il passaggio dalla lingua quotidiana a quella sociale/pubblica. Inizieremo a introdurre concetti scritti e le prime sfumature di Keigo (linguaggio onorifico).
-        </div>
-    </div>
-
-    <!-- Livelli Avanzati -->
-    <div class="level-card locked" style="opacity: 0.4;">
-        <div class="level-header">
-            <div class="level-title">🎓 JLPT N2 e N1: Fluente</div>
-            <div class="level-badge">6.000 - 10.000+ Vocaboli</div>
-        </div>
-        <div class="level-desc">
-            Capacità di leggere giornali, capire le news in TV e lavorare in aziende giapponesi (N2 è il requisito standard aziendale). L'N1 equivale alla padronanza quasi madrelingua.
-        </div>
-    </div>
+    {% endfor %}
     
     <div style="text-align:center; margin-top: 2rem;">
         <a href="/dashboard" class="btn btn-glass">← Torna alla Dashboard</a>
