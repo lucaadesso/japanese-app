@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.models import Base, User, Card, UserCard
+import datetime
 from datetime import date
 import json
 
@@ -49,7 +50,7 @@ def seed_kanji_and_user():
                 uc = UserCard(user_id=test_user.id, card_id=card.id)
                 db.add(uc)
             uc.srs_stage = 5
-            uc.introduced_date = date.today()
+            uc.introduced_date = date.today() - datetime.timedelta(days=1)
             
     db.commit()
     print("Test user 'test_lv1' created with password 'password'. All Hiragana/Katakana/Grammar unlocked.")
