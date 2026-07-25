@@ -1,0 +1,75 @@
+<div id="zen-grammar-puzzle" style="padding:2rem; background:var(--bg-glass); border:1px solid var(--border); border-radius:24px; animation: fadeSlideIn 0.4s ease;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+    <div style="font-size:0.8rem; color:var(--text-muted); background:rgba(255,255,255,0.05); padding:0.2rem 0.6rem; border-radius:100px;">
+      N5 Grammatica
+    </div>
+    <div style="font-size:0.8rem; color:var(--accent-1); font-weight:700;">
+      {{ sentence.topic }}
+    </div>
+  </div>
+
+  <!-- Italian translation -->
+  <div style="text-align:center; font-size:1.1rem; color:var(--text-primary); margin-bottom:2rem; font-weight:600;">
+    "{{ sentence.italian }}"
+  </div>
+
+  <!-- Answer slots (Droppable) -->
+  <div id="grammar-answer-slots" style="display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:center; min-height:60px; padding:1rem; border:2px dashed rgba(255,255,255,0.1); border-radius:12px; margin-bottom:2rem;">
+    <!-- Selected blocks will move here -->
+  </div>
+
+  <!-- Available blocks -->
+  <div id="grammar-available-blocks" style="display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:center; min-height:80px; margin-bottom:2rem;">
+    {% for idx, block in blocks %}
+    <button class="grammar-block btn {% if block.is_particle %}btn-glass{% else %}btn-primary{% endif %}" 
+            data-idx="{{ idx }}"
+            style="font-size:1.1rem; padding:0.5rem 1rem; border-radius:8px; cursor:pointer; transition:transform 0.1s;">
+      {{ block.kana }}
+    </button>
+    {% endfor %}
+  </div>
+
+  <!-- Check form -->
+  <form id="grammar-form" hx-post="/api/zen/grammar/check/{{ sentence.id }}" hx-target="#zen-grammar-puzzle" hx-swap="outerHTML">
+    <input type="hidden" name="order" id="grammar-order-input" value="">
+    <div style="text-align:center;">
+      <button type="submit" class="btn btn-primary" id="grammar-verify-btn" style="width:100%; max-width:250px; opacity:0.5; pointer-events:none;">Verifica</button>
+    </div>
+  </form>
+
+  <script>
+    (function(){
+      const slots = document.getElementById('grammar-answer-slots');
+      const available = document.getElementById('grammar-available-blocks');
+      const verifyBtn = document.getElementById('grammar-verify-btn');
+      const orderInput = document.getElementById('grammar-order-input');
+      const totalBlocks = {{ blocks|length }};
+
+      function updateState() {
+        const selected = Array.from(slots.children);
+        if (selected.length === totalBlocks) {
+          verifyBtn.style.opacity = '1';
+          verifyBtn.style.pointerEvents = 'auto';
+        } else {
+          verifyBtn.style.opacity = '0.5';
+          verifyBtn.style.pointerEvents = 'none';
+        }
+        orderInput.value = selected.map(b => b.dataset.idx).join(',');
+      }
+
+      function moveBlock(e) {
+        if (!e.target.classList.contains('grammar-block')) return;
+        const block = e.target;
+        if (block.parentElement === available) {
+          slots.appendChild(block);
+        } else {
+          available.appendChild(block);
+        }
+        updateState();
+      }
+
+      available.addEventListener('click', moveBlock);
+      slots.addEventListener('click', moveBlock);
+    })();
+  </script>
+</div>

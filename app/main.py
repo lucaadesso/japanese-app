@@ -489,6 +489,78 @@ async def zen_word_hint(word_id: int, request: Request, db: Session = Depends(ge
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# Zen Grammar Builder — HTMX partials
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@app.get("/api/zen/grammar", response_class=HTMLResponse)
+async def zen_grammar(request: Request, db: Session = Depends(get_db), exclude: int = 0):
+    user = require_user(request, db)
+    import json
+    import os
+    import random
+    
+    grammar_path = os.path.join(os.path.dirname(__file__), "data", "grammar_n5.json")
+    try:
+        with open(grammar_path, "r", encoding="utf-8") as f:
+            sentences = json.load(f)
+    except FileNotFoundError:
+        sentences = []
+        
+    if not sentences:
+        return HTMLResponse("<div>Nessuna frase disponibile.</div>")
+        
+    # filter out the excluded one
+    available = [s for s in sentences if s["id"] != exclude]
+    if not available:
+        available = sentences
+        
+    sentence = random.choice(available)
+    blocks = list(enumerate(sentence["blocks"])) # Add original indices to blocks
+    random.shuffle(blocks)
+    
+    return templates.TemplateResponse("zen_grammar_puzzle.html", {
+        "request": request,
+        "sentence": sentence,
+        "blocks": blocks,
+    })
+
+
+@app.post("/api/zen/grammar/check/{sentence_id}", response_class=HTMLResponse)
+async def zen_grammar_check(sentence_id: int, request: Request, db: Session = Depends(get_db)):
+    form = await request.form()
+    # submitted_order is a comma-separated string of original indices
+    order_str = form.get("order") or ""
+    
+    try:
+        user_order = [int(x) for x in order_str.split(",") if x.strip()]
+    except ValueError:
+        user_order = []
+        
+    import json
+    import os
+    grammar_path = os.path.join(os.path.dirname(__file__), "data", "grammar_n5.json")
+    try:
+        with open(grammar_path, "r", encoding="utf-8") as f:
+            sentences = json.load(f)
+    except FileNotFoundError:
+        sentences = []
+        
+    sentence = next((s for s in sentences if s["id"] == sentence_id), None)
+    if not sentence:
+        return HTMLResponse("<div>Frase non trovata.</div>", status_code=404)
+        
+    expected_order = list(range(len(sentence["blocks"])))
+    is_correct = (user_order == expected_order)
+    
+    return templates.TemplateResponse("zen_grammar_result.html", {
+        "request": request,
+        "sentence": sentence,
+        "is_correct": is_correct,
+        "user_order": user_order,
+    })
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # API
 # ═══════════════════════════════════════════════════════════════════════════════
 

@@ -53,11 +53,26 @@
   </div>
 
   <!-- ════════════════════════════════════════════════════
-       Word Discovery
+       Zen Navigation
   ════════════════════════════════════════════════════ -->
-  <div class="zen-divider">Decodifica Parole 🔍</div>
+  <div style="display:flex; justify-content:center; margin-bottom: 2rem;">
+      <div style="background: rgba(0,0,0,0.2); padding: 0.3rem; border-radius: 100px; display: inline-flex; gap: 0.5rem; border: 1px solid rgba(255,255,255,0.05);">
+          <button class="btn btn-primary" style="border-radius: 100px; padding: 0.4rem 1.5rem;"
+                  hx-get="/api/zen/word" hx-target="#zen-play-area" 
+                  onclick="document.querySelectorAll('.zen-nav-btn').forEach(b => {b.classList.remove('btn-primary'); b.classList.add('btn-glass');}); this.classList.remove('btn-glass'); this.classList.add('btn-primary');"
+                  class="zen-nav-btn btn-primary">
+              Vocaboli 🔍
+          </button>
+          <button class="btn btn-glass" style="border-radius: 100px; padding: 0.4rem 1.5rem;"
+                  hx-get="/api/zen/grammar" hx-target="#zen-play-area"
+                  onclick="document.querySelectorAll('.zen-nav-btn').forEach(b => {b.classList.remove('btn-primary'); b.classList.add('btn-glass');}); this.classList.remove('btn-glass'); this.classList.add('btn-primary');"
+                  class="zen-nav-btn btn-glass">
+              Frasi 🧩
+          </button>
+      </div>
+  </div>
 
-  <div style="max-width:520px; margin:0 auto 1.5rem;">
+  <div id="zen-play-area" style="max-width:520px; margin:0 auto 1.5rem;">
 
     {% if word_count > 0 %}
     <!-- Subtitle + word count -->
