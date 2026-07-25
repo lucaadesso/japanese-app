@@ -237,6 +237,13 @@ async def submit_learn(uc_id: int, request: Request, db: Session = Depends(get_d
             "over_limit":   True, "congratulate": False,
         })
 
+    # Mini-review after every 5 cards learned
+    already_today = srs.count_new_learned_today(db, user)
+    if already_today > 0 and already_today % 5 == 0:
+        due_cards = srs.get_due_cards(db, user)
+        if due_cards:
+            return RedirectResponse(url="/review/start", status_code=303)
+
     return RedirectResponse(url="/learn/card", status_code=303)
 
 

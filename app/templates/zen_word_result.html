@@ -61,7 +61,7 @@
 
   {% if is_correct == false and force_other %}
     <div style="font-size:1rem; font-weight:600; color:var(--accent-warn); margin-bottom:1rem;">
-      Giusto, ma sai già questa variante! Riprova con uno degli altri significati (o con il romaji).
+      Giusto, ma hai usato troppo questa variante! Prova a digitare: <strong>{{ word.r }}</strong> oppure <strong>{{ word.m }}</strong>.
     </div>
   {% elif is_correct == false and user_answer %}
   <div style="font-size:.82rem; color:var(--text-muted); margin-bottom:.8rem;">

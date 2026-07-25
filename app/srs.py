@@ -370,7 +370,7 @@ def mark_card_learned(db: Session, uc: UserCard, fast_lane_failed: bool = False)
         uc.fast_lane = False
     else:
         uc.srs_stage = 1
-        uc.due_date = datetime.now() + timedelta(minutes=10)
+        uc.due_date = datetime.now() # Due immediately for the mini-review
         uc.fast_lane = False
 
     db.commit()
@@ -383,7 +383,7 @@ def mark_card_learned(db: Session, uc: UserCard, fast_lane_failed: bool = False)
 def get_due_cards(db: Session, user: User, limit: int = DAILY_CARD_CAP) -> list[UserCard]:
     """Returns up to `limit` UserCards due today (srs_stage >= 1, due today or overdue)."""
     today = date.today()
-    return (
+    cards = (
         db.query(UserCard)
         .filter(
             UserCard.user_id == user.id,
@@ -394,6 +394,9 @@ def get_due_cards(db: Session, user: User, limit: int = DAILY_CARD_CAP) -> list[
         .limit(limit)
         .all()
     )
+    import random
+    random.shuffle(cards)
+    return cards
 
 
 # ─── Progress helpers ─────────────────────────────────────────────────────────
@@ -671,6 +674,7 @@ def get_zen_words(db: Session, user: User, exclude_id: Optional[int] = None) -> 
             
         word_data = dict(w)
         word_data["step"] = step
+        word_data["_step1_count"] = step1
         
         if step == 2:
             correct_chars = list(word_data["j"])
@@ -690,6 +694,8 @@ def get_zen_words(db: Session, user: User, exclude_id: Optional[int] = None) -> 
         available.append(word_data)
 
     random.shuffle(available)
+    # Give priority to step 1 words, especially those with 0 progress
+    available.sort(key=lambda x: (x["step"], x["_step1_count"]))
     return available
 
 def record_zen_word_success(db: Session, user: User, word_id: int, step: int, match_idx: int = -1, total_variants: int = 1):
