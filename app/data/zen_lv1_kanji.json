@@ -3,80 +3,443 @@
     "id": "k1",
     "kanji": "一",
     "meaning": "Uno",
-    "onyomi": ["ichi", "itsu"],
-    "kunyomi": ["hito"],
-    "examples": ["一つ (hitotsu) - una cosa", "一番 (ichiban) - numero uno"]
+    "onyomi": [
+      "ichi",
+      "itsu"
+    ],
+    "kunyomi": [
+      "hito"
+    ],
+    "examples": [
+      "一つ (hitotsu)"
+    ]
   },
   {
     "id": "k2",
     "kanji": "二",
     "meaning": "Due",
-    "onyomi": ["ni", "ji"],
-    "kunyomi": ["futa"],
-    "examples": ["二つ (futatsu) - due cose", "二人 (futari) - due persone"]
+    "onyomi": [
+      "ni",
+      "ji"
+    ],
+    "kunyomi": [
+      "futa"
+    ],
+    "examples": [
+      "二つ (futatsu)"
+    ]
   },
   {
     "id": "k3",
     "kanji": "三",
     "meaning": "Tre",
-    "onyomi": ["san"],
-    "kunyomi": ["mi"],
-    "examples": ["三つ (mittsu) - tre cose", "三日 (mikka) - terzo giorno"]
+    "onyomi": [
+      "san"
+    ],
+    "kunyomi": [
+      "mi"
+    ],
+    "examples": [
+      "三つ (mittsu)"
+    ]
   },
   {
     "id": "k4",
     "kanji": "四",
     "meaning": "Quattro",
-    "onyomi": ["shi"],
-    "kunyomi": ["yon", "yo"],
-    "examples": ["四つ (yottsu) - quattro cose", "四月 (shigatsu) - aprile"]
+    "onyomi": [
+      "shi"
+    ],
+    "kunyomi": [
+      "yon",
+      "yo"
+    ],
+    "examples": [
+      "四つ (yottsu)"
+    ]
   },
   {
     "id": "k5",
     "kanji": "五",
     "meaning": "Cinque",
-    "onyomi": ["go"],
-    "kunyomi": ["itsu"],
-    "examples": ["五つ (itsutsu) - cinque cose", "五日 (itsuka) - quinto giorno"]
+    "onyomi": [
+      "go"
+    ],
+    "kunyomi": [
+      "itsu"
+    ],
+    "examples": [
+      "五つ (itsutsu)"
+    ]
   },
   {
     "id": "k6",
-    "kanji": "日",
-    "meaning": "Sole / Giorno",
-    "onyomi": ["nichi", "jitsu"],
-    "kunyomi": ["hi", "bi", "ka"],
-    "examples": ["日本 (nihon) - Giappone", "日曜日 (nichiyoubi) - Domenica"]
+    "kanji": "六",
+    "meaning": "Sei",
+    "onyomi": [
+      "roku"
+    ],
+    "kunyomi": [
+      "mu"
+    ],
+    "examples": [
+      "六つ (muttsu)"
+    ]
   },
   {
     "id": "k7",
-    "kanji": "月",
-    "meaning": "Luna / Mese",
-    "onyomi": ["getsu", "gatsu"],
-    "kunyomi": ["tsuki"],
-    "examples": ["月曜日 (getsuyoubi) - Lunedì", "一月 (ichigatsu) - Gennaio"]
+    "kanji": "七",
+    "meaning": "Sette",
+    "onyomi": [
+      "shichi"
+    ],
+    "kunyomi": [
+      "nana"
+    ],
+    "examples": [
+      "七つ (nanatsu)"
+    ]
   },
   {
     "id": "k8",
-    "kanji": "火",
-    "meaning": "Fuoco",
-    "onyomi": ["ka"],
-    "kunyomi": ["hi", "bi"],
-    "examples": ["火曜日 (kayoubi) - Martedì", "花火 (hanabi) - Fuochi d'artificio"]
+    "kanji": "八",
+    "meaning": "Otto",
+    "onyomi": [
+      "hachi"
+    ],
+    "kunyomi": [
+      "ya"
+    ],
+    "examples": [
+      "八つ (yattsu)"
+    ]
   },
   {
     "id": "k9",
-    "kanji": "水",
-    "meaning": "Acqua",
-    "onyomi": ["sui"],
-    "kunyomi": ["mizu"],
-    "examples": ["水曜日 (suiyoubi) - Mercoledì", "水 (mizu) - Acqua"]
+    "kanji": "九",
+    "meaning": "Nove",
+    "onyomi": [
+      "kyuu",
+      "ku"
+    ],
+    "kunyomi": [
+      "kokono"
+    ],
+    "examples": [
+      "九つ (kokonotsu)"
+    ]
   },
   {
     "id": "k10",
+    "kanji": "十",
+    "meaning": "Dieci",
+    "onyomi": [
+      "juu"
+    ],
+    "kunyomi": [
+      "too"
+    ],
+    "examples": [
+      "十 (too)"
+    ]
+  },
+  {
+    "id": "k11",
+    "kanji": "百",
+    "meaning": "Cento",
+    "onyomi": [
+      "hyaku"
+    ],
+    "kunyomi": [],
+    "examples": [
+      "三百 (sanbyaku)"
+    ]
+  },
+  {
+    "id": "k12",
+    "kanji": "千",
+    "meaning": "Mille",
+    "onyomi": [
+      "sen"
+    ],
+    "kunyomi": [
+      "chi"
+    ],
+    "examples": [
+      "三千 (sanzen)"
+    ]
+  },
+  {
+    "id": "k13",
+    "kanji": "万",
+    "meaning": "Diecimila",
+    "onyomi": [
+      "man",
+      "ban"
+    ],
+    "kunyomi": [],
+    "examples": [
+      "一万 (ichiman)"
+    ]
+  },
+  {
+    "id": "k14",
+    "kanji": "日",
+    "meaning": "Sole / Giorno",
+    "onyomi": [
+      "nichi",
+      "jitsu"
+    ],
+    "kunyomi": [
+      "hi",
+      "ka"
+    ],
+    "examples": [
+      "日本 (nihon)"
+    ]
+  },
+  {
+    "id": "k15",
+    "kanji": "月",
+    "meaning": "Luna / Mese",
+    "onyomi": [
+      "getsu",
+      "gatsu"
+    ],
+    "kunyomi": [
+      "tsuki"
+    ],
+    "examples": [
+      "月曜日 (getsuyoubi)"
+    ]
+  },
+  {
+    "id": "k16",
+    "kanji": "火",
+    "meaning": "Fuoco",
+    "onyomi": [
+      "ka"
+    ],
+    "kunyomi": [
+      "hi"
+    ],
+    "examples": [
+      "火曜日 (kayoubi)"
+    ]
+  },
+  {
+    "id": "k17",
+    "kanji": "水",
+    "meaning": "Acqua",
+    "onyomi": [
+      "sui"
+    ],
+    "kunyomi": [
+      "mizu"
+    ],
+    "examples": [
+      "水曜日 (suiyoubi)"
+    ]
+  },
+  {
+    "id": "k18",
     "kanji": "木",
-    "meaning": "Albero / Legno",
-    "onyomi": ["moku", "boku"],
-    "kunyomi": ["ki", "ko"],
-    "examples": ["木曜日 (mokuyoubi) - Giovedì", "木 (ki) - Albero"]
+    "meaning": "Albero",
+    "onyomi": [
+      "moku",
+      "boku"
+    ],
+    "kunyomi": [
+      "ki"
+    ],
+    "examples": [
+      "木曜日 (mokuyoubi)"
+    ]
+  },
+  {
+    "id": "k19",
+    "kanji": "金",
+    "meaning": "Oro / Denaro",
+    "onyomi": [
+      "kin",
+      "kon"
+    ],
+    "kunyomi": [
+      "kane"
+    ],
+    "examples": [
+      "金曜日 (kinyoubi)"
+    ]
+  },
+  {
+    "id": "k20",
+    "kanji": "土",
+    "meaning": "Terra",
+    "onyomi": [
+      "do",
+      "to"
+    ],
+    "kunyomi": [
+      "tsuchi"
+    ],
+    "examples": [
+      "土曜日 (doyoubi)"
+    ]
+  },
+  {
+    "id": "k21",
+    "kanji": "人",
+    "meaning": "Persona",
+    "onyomi": [
+      "jin",
+      "nin"
+    ],
+    "kunyomi": [
+      "hito"
+    ],
+    "examples": [
+      "日本人 (nihonjin)"
+    ]
+  },
+  {
+    "id": "k22",
+    "kanji": "大",
+    "meaning": "Grande",
+    "onyomi": [
+      "dai",
+      "tai"
+    ],
+    "kunyomi": [
+      "oo"
+    ],
+    "examples": [
+      "大きい (ookii)"
+    ]
+  },
+  {
+    "id": "k23",
+    "kanji": "中",
+    "meaning": "Centro / Dentro",
+    "onyomi": [
+      "chuu"
+    ],
+    "kunyomi": [
+      "naka"
+    ],
+    "examples": [
+      "中国 (chuugoku)"
+    ]
+  },
+  {
+    "id": "k24",
+    "kanji": "小",
+    "meaning": "Piccolo",
+    "onyomi": [
+      "shou"
+    ],
+    "kunyomi": [
+      "chii",
+      "ko",
+      "o"
+    ],
+    "examples": [
+      "小さい (chiisai)"
+    ]
+  },
+  {
+    "id": "k25",
+    "kanji": "上",
+    "meaning": "Sopra",
+    "onyomi": [
+      "jou",
+      "shou"
+    ],
+    "kunyomi": [
+      "ue",
+      "a",
+      "no"
+    ],
+    "examples": [
+      "上 (ue)"
+    ]
+  },
+  {
+    "id": "k26",
+    "kanji": "下",
+    "meaning": "Sotto",
+    "onyomi": [
+      "ka",
+      "ge"
+    ],
+    "kunyomi": [
+      "shita",
+      "sa",
+      "kuda"
+    ],
+    "examples": [
+      "下 (shita)"
+    ]
+  },
+  {
+    "id": "k27",
+    "kanji": "本",
+    "meaning": "Libro / Radice",
+    "onyomi": [
+      "hon"
+    ],
+    "kunyomi": [
+      "moto"
+    ],
+    "examples": [
+      "本 (hon)"
+    ]
+  },
+  {
+    "id": "k28",
+    "kanji": "行",
+    "meaning": "Andare",
+    "onyomi": [
+      "kou",
+      "gyou"
+    ],
+    "kunyomi": [
+      "i",
+      "yu",
+      "okona"
+    ],
+    "examples": [
+      "行く (iku)"
+    ]
+  },
+  {
+    "id": "k29",
+    "kanji": "来",
+    "meaning": "Venire",
+    "onyomi": [
+      "rai"
+    ],
+    "kunyomi": [
+      "ku",
+      "ki",
+      "ko"
+    ],
+    "examples": [
+      "来る (kuru)"
+    ]
+  },
+  {
+    "id": "k30",
+    "kanji": "食",
+    "meaning": "Mangiare",
+    "onyomi": [
+      "shoku"
+    ],
+    "kunyomi": [
+      "ta",
+      "ku"
+    ],
+    "examples": [
+      "食べる (taberu)"
+    ]
   }
 ]

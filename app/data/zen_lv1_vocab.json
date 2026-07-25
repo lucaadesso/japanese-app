@@ -1,0 +1,312 @@
+[
+  {
+    "id": "v1",
+    "type": "noun",
+    "kanji": "日本",
+    "kana": "にほん",
+    "romaji": "nihon",
+    "meaning": [
+      "Giappone"
+    ]
+  },
+  {
+    "id": "v2",
+    "type": "noun",
+    "kanji": "日本人",
+    "kana": "にほんじん",
+    "romaji": "nihonjin",
+    "meaning": [
+      "Giapponese (persona)"
+    ]
+  },
+  {
+    "id": "v3",
+    "type": "noun",
+    "kanji": "月曜日",
+    "kana": "げつようび",
+    "romaji": "getsuyoubi",
+    "meaning": [
+      "Lunedi",
+      "Lunedì"
+    ]
+  },
+  {
+    "id": "v4",
+    "type": "noun",
+    "kanji": "火曜日",
+    "kana": "かようび",
+    "romaji": "kayoubi",
+    "meaning": [
+      "Martedi",
+      "Martedì"
+    ]
+  },
+  {
+    "id": "v5",
+    "type": "noun",
+    "kanji": "水曜日",
+    "kana": "すいようび",
+    "romaji": "suiyoubi",
+    "meaning": [
+      "Mercoledi",
+      "Mercoledì"
+    ]
+  },
+  {
+    "id": "v6",
+    "type": "noun",
+    "kanji": "木曜日",
+    "kana": "もくようび",
+    "romaji": "mokuyoubi",
+    "meaning": [
+      "Giovedi",
+      "Giovedì"
+    ]
+  },
+  {
+    "id": "v7",
+    "type": "noun",
+    "kanji": "金曜日",
+    "kana": "きんようび",
+    "romaji": "kinyoubi",
+    "meaning": [
+      "Venerdi",
+      "Venerdì"
+    ]
+  },
+  {
+    "id": "v8",
+    "type": "noun",
+    "kanji": "土曜日",
+    "kana": "どようび",
+    "romaji": "doyoubi",
+    "meaning": [
+      "Sabato"
+    ]
+  },
+  {
+    "id": "v9",
+    "type": "noun",
+    "kanji": "日曜日",
+    "kana": "にちようび",
+    "romaji": "nichiyoubi",
+    "meaning": [
+      "Domenica"
+    ]
+  },
+  {
+    "id": "v10",
+    "type": "verb",
+    "kanji": "食べる",
+    "kana": "たべる",
+    "romaji": "taberu",
+    "meaning": [
+      "Mangiare"
+    ]
+  },
+  {
+    "id": "v11",
+    "type": "verb",
+    "kanji": "飲む",
+    "kana": "のむ",
+    "romaji": "nomu",
+    "meaning": [
+      "Bere"
+    ]
+  },
+  {
+    "id": "v12",
+    "type": "verb",
+    "kanji": "行く",
+    "kana": "いく",
+    "romaji": "iku",
+    "meaning": [
+      "Andare"
+    ]
+  },
+  {
+    "id": "v13",
+    "type": "verb",
+    "kanji": "来る",
+    "kana": "くる",
+    "romaji": "kuru",
+    "meaning": [
+      "Venire"
+    ]
+  },
+  {
+    "id": "v14",
+    "type": "verb",
+    "kanji": "見る",
+    "kana": "みる",
+    "romaji": "miru",
+    "meaning": [
+      "Vedere",
+      "Guardare"
+    ]
+  },
+  {
+    "id": "v15",
+    "type": "verb",
+    "kanji": "聞く",
+    "kana": "きく",
+    "romaji": "kiku",
+    "meaning": [
+      "Ascoltare",
+      "Sentire",
+      "Chiedere"
+    ]
+  },
+  {
+    "id": "v16",
+    "type": "adjective",
+    "kanji": "大きい",
+    "kana": "おおきい",
+    "romaji": "ookii",
+    "meaning": [
+      "Grande"
+    ]
+  },
+  {
+    "id": "v17",
+    "type": "adjective",
+    "kanji": "小さい",
+    "kana": "ちいさい",
+    "romaji": "chiisai",
+    "meaning": [
+      "Piccolo"
+    ]
+  },
+  {
+    "id": "v18",
+    "type": "adjective",
+    "kanji": "高い",
+    "kana": "たかい",
+    "romaji": "takai",
+    "meaning": [
+      "Alto",
+      "Costoso"
+    ]
+  },
+  {
+    "id": "v19",
+    "type": "adjective",
+    "kanji": "安い",
+    "kana": "やすい",
+    "romaji": "yasui",
+    "meaning": [
+      "Economico"
+    ]
+  },
+  {
+    "id": "v20",
+    "type": "adjective",
+    "kanji": "新しい",
+    "kana": "あたらしい",
+    "romaji": "atarashii",
+    "meaning": [
+      "Nuovo"
+    ]
+  },
+  {
+    "id": "v21",
+    "type": "adjective",
+    "kanji": "古い",
+    "kana": "ふるい",
+    "romaji": "furui",
+    "meaning": [
+      "Vecchio"
+    ]
+  },
+  {
+    "id": "v22",
+    "type": "noun",
+    "kanji": "本",
+    "kana": "ほん",
+    "romaji": "hon",
+    "meaning": [
+      "Libro"
+    ]
+  },
+  {
+    "id": "v23",
+    "type": "noun",
+    "kanji": "学生",
+    "kana": "がくせい",
+    "romaji": "gakusei",
+    "meaning": [
+      "Studente"
+    ]
+  },
+  {
+    "id": "v24",
+    "type": "noun",
+    "kanji": "先生",
+    "kana": "せんせい",
+    "romaji": "sensei",
+    "meaning": [
+      "Insegnante",
+      "Maestro"
+    ]
+  },
+  {
+    "id": "v25",
+    "type": "noun",
+    "kanji": "学校",
+    "kana": "がっこう",
+    "romaji": "gakkou",
+    "meaning": [
+      "Scuola"
+    ]
+  },
+  {
+    "id": "v26",
+    "type": "noun",
+    "kanji": "水",
+    "kana": "みず",
+    "romaji": "mizu",
+    "meaning": [
+      "Acqua"
+    ]
+  },
+  {
+    "id": "v27",
+    "type": "noun",
+    "kanji": "人",
+    "kana": "ひと",
+    "romaji": "hito",
+    "meaning": [
+      "Persona"
+    ]
+  },
+  {
+    "id": "v28",
+    "type": "noun",
+    "kanji": "今日",
+    "kana": "きょう",
+    "romaji": "kyou",
+    "meaning": [
+      "Oggi"
+    ]
+  },
+  {
+    "id": "v29",
+    "type": "noun",
+    "kanji": "明日",
+    "kana": "あした",
+    "romaji": "ashita",
+    "meaning": [
+      "Domani"
+    ]
+  },
+  {
+    "id": "v30",
+    "type": "noun",
+    "kanji": "昨日",
+    "kana": "きのう",
+    "romaji": "kinou",
+    "meaning": [
+      "Ieri"
+    ]
+  }
+]
