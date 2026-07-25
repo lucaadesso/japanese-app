@@ -249,6 +249,51 @@
     'ra':     'らりるれろ',
     'wa':     'わを',
     'n':      'ん',
+    'ga':     'がぎぐげご',
+    'za':     'ざじずぜぞ',
+    'da':     'だぢづでど',
+    'ba':     'ばびぶべぼ',
+    'pa':     'ぱぴぷぺぽ',
+    'kya':    'きゃきゅきょ',
+    'gya':    'ぎゃぎゅぎょ',
+    'sha':    'しゃしゅしょ',
+    'ja':     'じゃじゅじょ',
+    'cha':    'ちゃちゅちょ',
+    'nya':    'にゃにゅにょ',
+    'hya':    'ひゃひゅひょ',
+    'bya':    'びゃびゅびょ',
+    'pya':    'ぴゃぴゅぴょ',
+    'mya':    'みゃみゅみょ',
+    'rya':    'りゃりゅりょ'
+  } %}
+  {% set GROUP_LABELS = {
+    'vowels': 'a, i, u, e, o',
+    'ka':     'ka, ki, ku, ke, ko',
+    'sa':     'sa, shi, su, se, so',
+    'ta':     'ta, chi, tsu, te, to',
+    'na':     'na, ni, nu, ne, no',
+    'ha':     'ha, hi, fu, he, ho',
+    'ma':     'ma, mi, mu, me, mo',
+    'ya':     'ya, yu, yo',
+    'ra':     'ra, ri, ru, re, ro',
+    'wa':     'wa, wo',
+    'n':      'n',
+    'ga':     'ga, gi, gu, ge, go',
+    'za':     'za, ji, zu, ze, zo',
+    'da':     'da, ji, zu, de, do',
+    'ba':     'ba, bi, bu, be, bo',
+    'pa':     'pa, pi, pu, pe, po',
+    'kya':    'kya, kyu, kyo',
+    'gya':    'gya, gyu, gyo',
+    'sha':    'sha, shu, sho',
+    'ja':     'ja, ju, jo',
+    'cha':    'cha, chu, cho',
+    'nya':    'nya, nyu, nyo',
+    'hya':    'hya, hyu, hyo',
+    'bya':    'bya, byu, byo',
+    'pya':    'pya, pyu, pyo',
+    'mya':    'mya, myu, myo',
+    'rya':    'rya, ryu, ryo'
   } %}
   {% set KATA_CHARS = {
     'vowels': 'アイウエオ',
@@ -262,8 +307,23 @@
     'ra':     'ラリルレロ',
     'wa':     'ワヲ',
     'n':      'ン',
+    'ga':     'ガギグゲゴ',
+    'za':     'ザジズゼゾ',
+    'da':     'ダヂヅデド',
+    'ba':     'バビブベボ',
+    'pa':     'パピプペポ',
+    'kya':    'キャキュキョ',
+    'gya':    'ギャギュギョ',
+    'sha':    'シャシュショ',
+    'ja':     'ジャジュジョ',
+    'cha':    'チャチュチョ',
+    'nya':    'ニャニュニョ',
+    'hya':    'ヒャヒュヒョ',
+    'bya':    'ビャビュビョ',
+    'pya':    'ピャピュピョ',
+    'mya':    'ミャミュミョ',
+    'rya':    'リャリュリョ'
   } %}
-
   <div class="phase-section">
     <div class="phase-header">
       <div class="phase-title">🎴 Hiragana <span style="font-family:'Noto Sans JP'; color:var(--accent-1);">ひらがな</span></div>
@@ -275,7 +335,7 @@
         {% set is_current = current_group and current_group.phase == 'hiragana' and current_group.group == g.group %}
         {% set tile_class = 'complete' if g.complete else ('active' if is_current else 'locked') %}
         <div class="group-tile {{ tile_class }}" title="{{ g.learned }}/{{ g.total }} {{ t('dashboard.learned') }}">
-          <div class="group-tile-label">{{ g.group }}</div>
+          <div class="group-tile-label" style="font-size: 0.72rem; line-height: 1.1; text-transform: none;">{{ GROUP_LABELS.get(g.group, g.group | capitalize) }}</div>
           <div class="group-tile-chars">{{ GROUP_CHARS.get(g.group, '') }}</div>
           <div class="group-tile-pct {% if g.complete %}pct-green{% elif is_current %}pct-violet{% else %}pct-dim{% endif %}">
             {% if g.complete %}✅{% elif is_current %}{{ g.pct_learned }}%{% else %}🔒{% endif %}
@@ -313,7 +373,7 @@
         {% set is_current = progress.current_learn and progress.current_learn.phase == 'katakana' and progress.current_learn.group == g.group %}
         {% set tile_class = 'complete' if g.complete else ('active' if is_current else 'locked') %}
         <div class="group-tile {{ tile_class }}">
-          <div class="group-tile-label">{{ g.group }}</div>
+          <div class="group-tile-label" style="font-size: 0.72rem; line-height: 1.1; text-transform: none;">{{ GROUP_LABELS.get(g.group, g.group | capitalize) }}</div>
           <div class="group-tile-chars">{{ KATA_CHARS.get(g.group, '') }}</div>
           <div class="group-tile-pct {% if g.complete %}pct-green{% elif is_current %}pct-violet{% else %}pct-dim{% endif %}">
             {% if g.complete %}✅{% elif is_current %}{{ g.pct_learned }}%{% else %}🔒{% endif %}
@@ -329,7 +389,7 @@
     <div class="groups-grid" style="opacity:.3; pointer-events:none;">
       {% for g in progress.katakana.groups %}
       <div class="group-tile locked">
-        <div class="group-tile-label">{{ g.group }}</div>
+        <div class="group-tile-label" style="font-size: 0.72rem; line-height: 1.1; text-transform: none;">{{ GROUP_LABELS.get(g.group, g.group | capitalize) }}</div>
         <div class="group-tile-chars" style="font-family:'Noto Sans JP';">{{ KATA_CHARS.get(g.group, '') }}</div>
         <div class="group-tile-pct pct-dim">🔒</div>
       </div>
