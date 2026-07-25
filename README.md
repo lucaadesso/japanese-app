@@ -15,14 +15,14 @@ Un'app gamificata per imparare il giapponese (Hiragana e Katakana) con SRS adatt
 ## 2. Percorso Didattico Progressivo
 
 ### Modalità LEARN (`/learn`)
-* Introduce max **5 carte NUOVE** al giorno.
-* Sequenza guidata per gruppo:
+* Introduce max **X carte NUOVE** al giorno (configurabile).
+* **Chunking (Blocchi da 5)**: L'apprendimento è suddiviso in mini-blocchi. Dopo ogni 5 carte nuove studiate, parte automaticamente un mini-ripasso per fissare i concetti.
+* Sequenza guidata per carta:
   1. **Fase studio** (4 sec): mostra il carattere + lettura + romanji + **nota mnemonica visiva**.
   2. **Mini-quiz**: l'utente scrive la romanizzazione → verifica immediata.
   3. Se corretto: avanza automaticamente (0.8s).
   4. Se sbagliato: mostra risposta corretta → bottone "Avanti" → carta comunque introdotta.
-* La carta passa a `srs_stage = 1` e `is_new = False` dopo il mini-quiz.
-* La carta entra nella coda SRS con `due_date = domani`.
+* La carta passa a `srs_stage = 1` ed è messa in scadenza *immediata* per forzare la comparsa nel mini-ripasso.
 
 ### Modalità REVIEW (`/review`)
 * Solo carte con `srs_stage >= 1` e `due_date <= oggi`.
@@ -30,12 +30,26 @@ Un'app gamificata per imparare il giapponese (Hiragana e Katakana) con SRS adatt
 
 ### Unlock progressivo dei gruppi
 ```
-Hiragana gruppi (sequenziale, in ordine):
+Hiragana Base (sequenziale):
   vowels → ka → sa → ta → na → ha → ma → ya → ra → wa → n
 
-Katakana: sbloccato quando Hiragana >= 80% completato.
-Vocaboli (fase 2): sbloccato dopo 100% Katakana.
+Hiragana 1.5 (Regole Avanzate):
+  dakuten (゛) → handakuten (゜) → yoon (ゃゅょ) → sokuon (っ)
+
+Katakana: sbloccato quando Hiragana Base + 1.5 >= 80% completato.
 ```
+
+### Zen Mode (`/zen`)
+* Gioco di composizione vocabolario focalizzato sulla lettura.
+* Propone 146 vocaboli (JLPT N5) letti da `app/data/zen_vocab.json`.
+* **Step 1**: Inserimento del romaji o traduzione con controllo bilanciato per evitare di usare sempre lo stesso significato. Se si forza la rotazione, l'app suggerisce la variante mancante.
+* **Step 2**: Costruzione della parola tappando i kana corretti in mezzo a distrattori.
+* Le parole non vengono mostrate finché *tutti* i kana che le compongono non sono stati imparati.
+* L'ordine dà priorità alle parole mai viste o che contengono caratteri appresi di recente.
+
+### Audio (TTS)
+* Riproduzione audio integrata basata su `Web Speech API`. 
+* Presenta un delay intenzionale di 250ms per impedire il troncamento della prima sillaba su dispositivi mobile (come iOS Safari).
 
 ## 3. Struttura del Progetto
 ```
