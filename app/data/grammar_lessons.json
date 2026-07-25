@@ -1,0 +1,37 @@
+[
+    {
+        "group_name": "n5_1",
+        "title": "La particella WA (は)",
+        "rule": "La particella は si scrive con l'hiragana 'ha', ma quando è usata come particella si pronuncia 'wa'. Serve a indicare il 'tema' (il soggetto o l'argomento principale) della frase.",
+        "formula": "[A] wa [B] desu",
+        "example": "Watashi wa gakusei desu (Io sono uno studente)."
+    },
+    {
+        "group_name": "n5_2",
+        "title": "La particella O (を)",
+        "rule": "La particella を si usa per indicare l'oggetto diretto di un'azione. Risponde alla domanda 'Chi? Che cosa?' dopo un verbo transitivo.",
+        "formula": "[Oggetto] o [Verbo]",
+        "example": "Mizu o nomimasu (Bevo l'acqua)."
+    },
+    {
+        "group_name": "n5_3",
+        "title": "La particella NI (に)",
+        "rule": "La particella に indica la destinazione di un movimento (Moto a luogo) o un momento preciso nel tempo.",
+        "formula": "[Luogo] ni [Verbo di moto]",
+        "example": "Nihon ni ikimasu (Vado in Giappone)."
+    },
+    {
+        "group_name": "n5_4",
+        "title": "Esistenza: Arimasu e Imasu",
+        "rule": "In giapponese ci sono due verbi per dire 'C'è/Ci sono'. 'Arimasu' si usa per gli oggetti inanimati e le piante. 'Imasu' si usa per le persone e gli animali (esseri animati). Entrambi usano la particella GA.",
+        "formula": "[Cosa] ga arimasu / [Animale] ga imasu",
+        "example": "Neko ga imasu (C'è un gatto)."
+    },
+    {
+        "group_name": "n5_5",
+        "title": "Negazione (Ja arimasen)",
+        "rule": "Per trasformare 'desu' (essere) in una frase negativa formale si usa 'ja arimasen' (non essere).",
+        "formula": "[A] wa [B] ja arimasen",
+        "example": "Inu ja arimasen (Non è un cane)."
+    }
+]
