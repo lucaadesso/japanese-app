@@ -589,3 +589,23 @@ async def submit_placement(request: Request, db: Session = Depends(get_db)):
         srs.enable_fast_lane(db, user, "katakana", k_idx)
         
     return RedirectResponse(url="/dashboard", status_code=303)
+
+
+# ─── Learning Path ───────────────────────────────────────────────────────────
+
+@app.get("/path", response_class=HTMLResponse)
+async def path_page(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user(request, db)
+    if not user:
+        return RedirectResponse(url="/", status_code=303)
+        
+    progress = {
+        "hiragana": srs.get_phase_progress(db, user, "hiragana"),
+        "katakana": srs.get_phase_progress(db, user, "katakana"),
+    }
+    
+    return templates.TemplateResponse("path.html", {
+        "request": request,
+        "user": user,
+        "progress": progress
+    })
