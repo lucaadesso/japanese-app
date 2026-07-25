@@ -107,7 +107,7 @@ ul.perks li {
     </div>
 
     <!-- Livello 0 -->
-    {% set hira_pct = progress.hiragana.phase.pct_learned %}
+    {% set hira_pct = progress.hiragana.pct_learned %}
     <div class="level-card active">
         <div class="level-header">
             <div class="level-title">🌱 Livello 0: Fondamenta</div>
@@ -127,7 +127,7 @@ ul.perks li {
         </div>
         <div class="level-stats">
             <span>Avanzamento Hiragana</span>
-            <span>{{ progress.hiragana.phase.learned }} / {{ progress.hiragana.phase.total }} ({{ hira_pct }}%)</span>
+            <span>{{ progress.hiragana.learned }} / {{ progress.hiragana.total }} ({{ hira_pct }}%)</span>
         </div>
     </div>
 
