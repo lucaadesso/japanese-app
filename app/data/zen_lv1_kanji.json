@@ -1,0 +1,82 @@
+[
+  {
+    "id": "k1",
+    "kanji": "一",
+    "meaning": "Uno",
+    "onyomi": ["ichi", "itsu"],
+    "kunyomi": ["hito"],
+    "examples": ["一つ (hitotsu) - una cosa", "一番 (ichiban) - numero uno"]
+  },
+  {
+    "id": "k2",
+    "kanji": "二",
+    "meaning": "Due",
+    "onyomi": ["ni", "ji"],
+    "kunyomi": ["futa"],
+    "examples": ["二つ (futatsu) - due cose", "二人 (futari) - due persone"]
+  },
+  {
+    "id": "k3",
+    "kanji": "三",
+    "meaning": "Tre",
+    "onyomi": ["san"],
+    "kunyomi": ["mi"],
+    "examples": ["三つ (mittsu) - tre cose", "三日 (mikka) - terzo giorno"]
+  },
+  {
+    "id": "k4",
+    "kanji": "四",
+    "meaning": "Quattro",
+    "onyomi": ["shi"],
+    "kunyomi": ["yon", "yo"],
+    "examples": ["四つ (yottsu) - quattro cose", "四月 (shigatsu) - aprile"]
+  },
+  {
+    "id": "k5",
+    "kanji": "五",
+    "meaning": "Cinque",
+    "onyomi": ["go"],
+    "kunyomi": ["itsu"],
+    "examples": ["五つ (itsutsu) - cinque cose", "五日 (itsuka) - quinto giorno"]
+  },
+  {
+    "id": "k6",
+    "kanji": "日",
+    "meaning": "Sole / Giorno",
+    "onyomi": ["nichi", "jitsu"],
+    "kunyomi": ["hi", "bi", "ka"],
+    "examples": ["日本 (nihon) - Giappone", "日曜日 (nichiyoubi) - Domenica"]
+  },
+  {
+    "id": "k7",
+    "kanji": "月",
+    "meaning": "Luna / Mese",
+    "onyomi": ["getsu", "gatsu"],
+    "kunyomi": ["tsuki"],
+    "examples": ["月曜日 (getsuyoubi) - Lunedì", "一月 (ichigatsu) - Gennaio"]
+  },
+  {
+    "id": "k8",
+    "kanji": "火",
+    "meaning": "Fuoco",
+    "onyomi": ["ka"],
+    "kunyomi": ["hi", "bi"],
+    "examples": ["火曜日 (kayoubi) - Martedì", "花火 (hanabi) - Fuochi d'artificio"]
+  },
+  {
+    "id": "k9",
+    "kanji": "水",
+    "meaning": "Acqua",
+    "onyomi": ["sui"],
+    "kunyomi": ["mizu"],
+    "examples": ["水曜日 (suiyoubi) - Mercoledì", "水 (mizu) - Acqua"]
+  },
+  {
+    "id": "k10",
+    "kanji": "木",
+    "meaning": "Albero / Legno",
+    "onyomi": ["moku", "boku"],
+    "kunyomi": ["ki", "ko"],
+    "examples": ["木曜日 (mokuyoubi) - Giovedì", "木 (ki) - Albero"]
+  }
+]

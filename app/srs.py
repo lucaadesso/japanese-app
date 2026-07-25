@@ -294,6 +294,15 @@ def get_current_learn_group(db: Session, user: User) -> Optional[dict]:
             if progress["pct_learned"] < 100:
                 return {"phase": "grammar", "group": group, "progress": progress}
 
+    # All Grammar done → unlock kanji
+    grammar_total = get_phase_progress(db, user, "grammar")
+    if grammar_total["pct_learned"] >= int(UNLOCK_THRESHOLD * 100):
+        KANJI_ORDER = ["kanji_1"]
+        for group in KANJI_ORDER:
+            progress = get_group_progress(db, user, "kanji", group)
+            if progress["pct_learned"] < 100:
+                return {"phase": "kanji", "group": group, "progress": progress}
+
     return None   # everything complete
 
 

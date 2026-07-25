@@ -101,5 +101,17 @@ async def callback(request: Request, db: Session = Depends(get_db)):
 
 @router.get("/logout")
 async def logout(request: Request):
-    request.session.clear()
+    request.session.pop(SESSION_KEY, None)
     return RedirectResponse(url="/")
+
+@router.get("/dev_login")
+async def dev_login(request: Request, db: Session = Depends(get_db)):
+    """Backdoor for testing."""
+    user = db.query(User).filter(User.email == "test_lv1@dev.com").first()
+    if not user:
+        user = User(google_id="dev_lv1", email="test_lv1@dev.com", name="Test Level 1")
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    request.session[SESSION_KEY] = user.id
+    return RedirectResponse(url="/dashboard")

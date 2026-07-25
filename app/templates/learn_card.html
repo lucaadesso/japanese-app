@@ -501,7 +501,11 @@
           <button type="button" onclick="speakText('{{ card.front }}')" style="position:absolute; top:10px; right:-40px; background:none; border:none; font-size:1.5rem; cursor:pointer; opacity:.7; transition:opacity .2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.7" title="Ascolta">🔊</button>
         </div>
 
+        {% if card.phase == 'kanji' %}
+        <div style="font-size:.9rem; color:var(--text-muted);">Cosa significa questo Kanji? (es: sole)</div>
+        {% else %}
         <div style="font-size:.9rem; color:var(--text-muted);">Come si legge questo carattere?</div>
+        {% endif %}
 
       </div><!-- /.learn-card -->
 
@@ -510,7 +514,7 @@
         <input
           type="text"
           id="quiz-input"
-          placeholder="Scrivi la lettura (es: ka, tsu, shi)&hellip;"
+          placeholder="{% if card.phase == 'kanji' %}Scrivi il significato...{% else %}Scrivi la lettura (es: ka, tsu, shi)&hellip;{% endif %}"
           autocomplete="off"
           autocorrect="off"
           autocapitalize="off"
